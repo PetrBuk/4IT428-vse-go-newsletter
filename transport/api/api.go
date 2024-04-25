@@ -23,13 +23,13 @@ type Controller struct {
 	*chi.Mux
 
 	authenticator middleware.Authenticator
-	service apiv1.Service
+	service apiv1.RouteService
 	version string
 }
 
 func NewController(
 	authenticator middleware.Authenticator,
-	service apiv1.Service,
+	service apiv1.RouteService,
 	version string,
 ) (*Controller, error) {
 	controller := &Controller{
@@ -47,8 +47,6 @@ func (c *Controller) initRouter() {
 	r.Group(func(r chi.Router) {
 		// r.Use(httpx.LoggingMiddleware(util.NewServerLogger("httpx.LoggingMiddleware")))
 		// r.Use(httpx.RecoverMiddleware(util.NewServerLogger("httpx.RecoverMiddleware").WithStackTrace(slog.Level)))
-		// TODO: Add authentication middleware
-		// authenticate := middleware.Authenticate(c.logger, c.tokenParser)
 
 		v1Handler := apiv1.NewHandler(
 			c.service,

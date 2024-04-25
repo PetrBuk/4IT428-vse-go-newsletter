@@ -21,6 +21,8 @@ type Config struct {
 	Port 				int 		`env:"PORT" validate:"required"`
 	AuthSecret 	string  `env:"AUTH_SECRET" validate:"required"`
 	DatabaseURL string 	`env:"DATABASE_URL" validate:"required"`
+	SupabaseID string 	`env:"SUPABASE_ID" validate:"required"`
+	SupabaseKey string 	`env:"SUPABASE_KEY" validate:"required"`
 }
 
 func LoadConfig() (Config, error) {

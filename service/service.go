@@ -5,6 +5,8 @@ import (
 
 	"vse-go-newsletter-api/pkg/id"
 	"vse-go-newsletter-api/service/model"
+
+	"github.com/supabase-community/gotrue-go"
 )
 
 type Repository interface {
@@ -14,10 +16,12 @@ type Repository interface {
 
 type Service struct {
 	repository Repository
+	authClient gotrue.Client
 }
 
-func NewService(repository Repository) (Service, error) {
+func NewService(repository Repository, authClient gotrue.Client) (Service, error) {
 	return Service{
 		repository: repository,
+		authClient: authClient,
 	}, nil
 }

@@ -20,7 +20,6 @@ type Authenticator interface {
 func NewAutheticate(authenticator Authenticator) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// ToDo
 			authHeaderValue := r.Header.Get(authHeader)
 			if authHeaderValue == "" {
 				http.Error(w, "missing authorization header", http.StatusUnauthorized)

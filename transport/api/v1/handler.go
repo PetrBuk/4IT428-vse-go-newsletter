@@ -9,12 +9,12 @@ import (
 type Handler struct {
 	*chi.Mux
 
-	service Service
+	service RouteService
 	authenticator middleware.Authenticator
 }
 
 func NewHandler(
-	service Service,
+	service RouteService,
 	authenticator middleware.Authenticator,
 ) *Handler {
 	h := &Handler{
@@ -29,6 +29,14 @@ func (h *Handler) initRouter() {
 	r := chi.NewRouter()
 
 	authenticate := middleware.NewAutheticate(h.authenticator)
+
+	r.Route("/auth", func(r chi.Router) {
+		r.Post("/login", h.Login)
+		r.Post("/register", h.Register)
+		r.Post("/verify", h.Verify)
+		r.Post("/refresh", h.RefreshToken)
+		r.With(authenticate).Post("/change-password", h.ChangePassword)
+	})
 
 	r.Route("/newsletters", func(r chi.Router) {
 		r.With(authenticate).Get("/", h.ListNewsletters)
