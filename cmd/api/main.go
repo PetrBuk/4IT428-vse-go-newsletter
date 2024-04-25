@@ -12,6 +12,7 @@ import (
 	"vse-go-newsletter-api/transport/util"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/supabase-community/gotrue-go"
 	httpx "go.strv.io/net/http"
 )
 
@@ -32,7 +33,9 @@ func main() {
 		slog.Error("initializing repository", slog.Any("error", err))
 	}
 
-	controller, err := setupController(cfg, repository)
+	authClient := gotrue.New(cfg.SupabaseID, cfg.SupabaseKey)
+
+	controller, err := setupController(cfg, repository, authClient)
 	if err != nil {
 		slog.Error("initializing controller", slog.Any("error", err))
 	}
@@ -75,9 +78,10 @@ func setupDatabase(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
 func setupController(
 	cfg Config,
 	repository service.Repository,
+	authClient gotrue.Client,
 ) (*api.Controller, error) {
 	// Initialize the service.
-	svc, err := service.NewService(repository)
+	svc, err := service.NewService(repository, authClient)
 	if err != nil {
 		return nil, fmt.Errorf("initializing newsletter service: %w", err)
 	}
