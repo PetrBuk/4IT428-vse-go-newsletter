@@ -85,7 +85,6 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//TODO update only if the updater is owner
 	ctx := r.Context()
 	userData := ctx.Value("user").(map[string]interface{})
 
