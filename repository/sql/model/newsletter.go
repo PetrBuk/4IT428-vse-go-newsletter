@@ -7,7 +7,9 @@ import (
 )
 
 type Newsletter struct {
-	ID        id.Newsletter   `db:"id"`
-	CreatedAt time.Time 			`db:"created_at"`
-	UpdatedAt time.Time 			`db:"updated_at"`
+	ID        id.Newsletter `db:"id"`
+	CreatedAt time.Time     `db:"created_at"`
+	UpdatedAt time.Time     `db:"updated_at"`
+	Title     string        `db:"title"`
+	Content   string        `db:"content"`
 }

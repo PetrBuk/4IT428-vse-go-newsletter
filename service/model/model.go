@@ -7,8 +7,10 @@ import (
 )
 
 type Newsletter struct {
-	ID				id.Newsletter
-	createAt	time.Time
-	updatedAt	time.Time
+	ID        id.Newsletter
+	createAt  time.Time
+	updatedAt time.Time
+	Title     string
+	Content   string
 	// name     string
 }
