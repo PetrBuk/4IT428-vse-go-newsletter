@@ -57,6 +57,8 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 
 	newsletter.ID = newsletterID
 
+	//TODO update only if the updater is owner
+
 	updatedNewsletter, err := h.service.UpdateNewsletter(r.Context(), newsletterID, newsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
