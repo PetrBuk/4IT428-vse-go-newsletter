@@ -9,4 +9,6 @@ var (
 	ReadNewsletter string
 	//go:embed scripts/newsletter/List.sql
 	ListNewsletter string
+	//go:embed scripts/newsletter/Update.sql
+	UpdateNewsletter string
 )

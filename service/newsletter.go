@@ -32,8 +32,12 @@ func (s Service) GetNewsletter(ctx context.Context, newsletterID id.Newsletter) 
 }
 
 // UpdateNewsletter updates attributes of a specified newsletter.
-func (Service) UpdateNewsletter(_ context.Context, newsletterId id.Newsletter, newsletter model.Newsletter) (*model.Newsletter, error) {
-	panic("not implemented")
+func (s Service) UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, newsletter model.Newsletter) (*model.Newsletter, error) {
+	dbNewsletter, err := s.repository.UpdateNewsletter(ctx, newsletterID, newsletter)
+	if err != nil {
+		return nil, err
+	}
+	return dbNewsletter, nil
 }
 
 // DeleteNewsletter deletes newsletter from memory.

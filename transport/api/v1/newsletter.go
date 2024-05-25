@@ -1,9 +1,11 @@
 package v1
 
 import (
+	"encoding/json"
 	"log/slog"
 	"net/http"
 	"vse-go-newsletter-api/pkg/id"
+	"vse-go-newsletter-api/service/model"
 	"vse-go-newsletter-api/transport/util"
 
 	"github.com/go-chi/chi"
@@ -40,7 +42,28 @@ func (h *Handler) ListNewsletters(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented - UpdateNewsletter")
+	var newsletterID id.Newsletter
+	if err := newsletterID.FromString(chi.URLParam(r, "id")); err != nil {
+		http.Error(w, "invalid newsletter ID", http.StatusBadRequest)
+		return
+	}
+
+	// decode JSON body request
+	var newsletter model.Newsletter
+	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	newsletter.ID = newsletterID
+
+	updatedNewsletter, err := h.service.UpdateNewsletter(r.Context(), newsletterID, newsletter)
+	if err != nil {
+		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	util.WriteResponse(w, http.StatusOK, updatedNewsletter)
 }
 
 func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {

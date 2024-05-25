@@ -67,3 +67,21 @@ func (r *NewsletterRepository) ListNewsletter(ctx context.Context) ([]model.News
 	}
 	return response, nil
 }
+
+func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, newsletter model.Newsletter) (*model.Newsletter, error) {
+	var dbNewsletter dbmodel.Newsletter
+
+	if err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&dbNewsletter,
+		query.UpdateNewsletter,
+		pgx.NamedArgs{"id": newsletterID,
+			"title":   newsletter.Title,
+			"content": newsletter.Content,
+		},
+	); err != nil {
+		return nil, err
+	}
+	return &model.Newsletter{}, nil
+}
