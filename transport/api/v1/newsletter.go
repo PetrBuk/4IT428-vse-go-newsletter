@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"vse-go-newsletter-api/pkg/id"
 	"vse-go-newsletter-api/service/model"
+	model2 "vse-go-newsletter-api/transport/api/v1/model"
 	"vse-go-newsletter-api/transport/util"
 
 	"github.com/go-chi/chi"
@@ -49,17 +50,20 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// decode JSON body request
-	var newsletter model.Newsletter
+	var newsletter model2.NewsLetter
 	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	newsletter.ID = newsletterID
-
 	//TODO update only if the updater is owner
+	ctx := r.Context()
+	userData := ctx.Value("user").(map[string]interface{})
 
-	updatedNewsletter, err := h.service.UpdateNewsletter(r.Context(), newsletterID, newsletter)
+	var serviceNewsletter = model.Newsletter{ID: newsletterID, Name: newsletter.Name, Description: newsletter.Description,
+		OwnerId: userData["user_id"].(string)}
+
+	updatedNewsletter, err := h.service.UpdateNewsletter(r.Context(), serviceNewsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
 		return

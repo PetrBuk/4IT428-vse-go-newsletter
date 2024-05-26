@@ -77,8 +77,9 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterI
 		&dbNewsletter,
 		query.UpdateNewsletter,
 		pgx.NamedArgs{"id": newsletterID,
-			"title":   newsletter.Title,
-			"content": newsletter.Content,
+			"name":        newsletter.Name,
+			"description": newsletter.Description,
+			"owner_id":    newsletter.OwnerId,
 		},
 	); err != nil {
 		return nil, err
