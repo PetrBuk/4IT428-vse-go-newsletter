@@ -4,7 +4,8 @@ ALTER TABLE newsletters
 ALTER TABLE newsletters
 ADD CONSTRAINT fk_owner
 FOREIGN KEY (owner_id)
-REFERENCES profiles (id);
+REFERENCES profiles (id)
+ON DELETE CASCADE;
 
 ALTER TABLE profiles
     ADD COLUMN email text;
