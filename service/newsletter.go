@@ -42,6 +42,10 @@ func (s Service) UpdateNewsletter(ctx context.Context, newsletter model.Newslett
 }
 
 // DeleteNewsletter deletes newsletter from memory.
-func (Service) DeleteNewsletter(_ context.Context, newsletterId id.Newsletter) error {
-	panic("not implemented")
+func (s Service) DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) error {
+	err := s.repository.DeleteNewsletter(ctx, newsletter.ID, newsletter)
+	if err != nil {
+		return err
+	}
+	return nil
 }

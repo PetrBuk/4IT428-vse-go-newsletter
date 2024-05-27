@@ -73,5 +73,30 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented - DeleteNewsletter")
+	var newsletterID id.Newsletter
+	if err := newsletterID.FromString(chi.URLParam(r, "id")); err != nil {
+		http.Error(w, "invalid newsletter ID", http.StatusBadRequest)
+		return
+	}
+
+	// decode JSON body request
+	var newsletter model2.NewsLetter
+	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	ctx := r.Context()
+	userData := ctx.Value("user").(map[string]interface{})
+
+	var serviceNewsletter = model.Newsletter{ID: newsletterID, Name: newsletter.Name, Description: newsletter.Description,
+		OwnerId: userData["user_id"].(string)}
+
+	err := h.service.DeleteNewsletter(r.Context(), serviceNewsletter)
+	if err != nil {
+		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	util.WriteResponse(w, http.StatusOK, newsletterID)
 }

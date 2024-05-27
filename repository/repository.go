@@ -86,3 +86,20 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterI
 	}
 	return &model.Newsletter{}, nil
 }
+
+func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, newsletter model.Newsletter) error {
+	var dbNewsletter dbmodel.Newsletter
+
+	if err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&dbNewsletter,
+		query.DeleteNewsletter,
+		pgx.NamedArgs{"id": newsletterID,
+			"owner_id": newsletter.OwnerId,
+		},
+	); err != nil {
+		return err
+	}
+	return nil
+}
