@@ -8,8 +8,12 @@ import (
 )
 
 // CreateNewsletter saves newsletter in map under email as a key.
-func (Service) CreateNewsletter(_ context.Context, newsletter model.Newsletter) error {
-	panic("not implemented")
+func (s Service) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (bool, error) {
+	created, err := s.repository.CreateNewsletter(ctx, name, description, ownerId)
+	if err != nil {
+		return false, err
+	}
+	return created, err
 }
 
 // ListNewsletters returns list of newsletters in array of newsletters.

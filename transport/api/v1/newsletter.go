@@ -13,7 +13,26 @@ import (
 )
 
 func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented - CreateNewsletter")
+	var newsletter model2.NewsLetter
+
+	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	}
+
+	ctx := r.Context()
+	userData := ctx.Value("user").(map[string]interface{})
+
+	if userData == nil {
+		http.Error(w, "User not logged in!", http.StatusForbidden)
+		return
+	}
+	userId := userData["userID"].(string)
+
+	created, err := h.service.CreateNewsletter(ctx, newsletter.Name, newsletter.Description, userId)
+	if err != nil {
+		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+	}
+	util.WriteResponse(w, http.StatusOK, created)
 }
 
 func (h *Handler) GetNewsletter(w http.ResponseWriter, r *http.Request) {

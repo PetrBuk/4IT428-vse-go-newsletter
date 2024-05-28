@@ -103,3 +103,21 @@ func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterI
 	}
 	return nil
 }
+
+func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (bool, error) {
+	var dbNewsletter dbmodel.Newsletter
+
+	if err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&dbNewsletter,
+		query.CreateNewsletter,
+		pgx.NamedArgs{
+			"name":        name,
+			"description": description,
+			"owner_id":    ownerId},
+	); err != nil {
+		return false, err
+	}
+	return true, nil
+}

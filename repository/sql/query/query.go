@@ -13,4 +13,6 @@ var (
 	UpdateNewsletter string
 	//go:embed scripts/newsletter/Delete.sql
 	DeleteNewsletter string
+	//go:embed scripts/newsletter/Create.sql
+	CreateNewsletter string
 )
