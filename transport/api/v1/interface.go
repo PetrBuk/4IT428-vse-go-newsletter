@@ -19,6 +19,6 @@ type RouteService interface {
 	CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (bool, error)
 	ListNewsletters(ctx context.Context) ([]svcmodel.Newsletter, error)
 	GetNewsletter(ctx context.Context, newsletterId id.Newsletter) (*svcmodel.Newsletter, error)
-	UpdateNewsletter(ctx context.Context, newsletter svcmodel.Newsletter) (*svcmodel.Newsletter, error)
+	UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, name string, description string, ownerId string) (*svcmodel.Newsletter, error)
 	DeleteNewsletter(ctx context.Context, newsletter svcmodel.Newsletter) error
 }
