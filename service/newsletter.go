@@ -36,12 +36,12 @@ func (s Service) GetNewsletter(ctx context.Context, newsletterID id.Newsletter) 
 }
 
 // UpdateNewsletter updates attributes of a specified newsletter.
-func (s Service) UpdateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
-	dbNewsletter, err := s.repository.UpdateNewsletter(ctx, newsletter.ID, newsletter)
+func (s Service) UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, name string, description string, ownerId string) (*model.Newsletter, error) {
+	updatedNewsletter, err := s.repository.UpdateNewsletter(ctx, newsletterID, name, description, ownerId)
 	if err != nil {
 		return nil, err
 	}
-	return dbNewsletter, nil
+	return updatedNewsletter, err
 }
 
 // DeleteNewsletter deletes newsletter from memory.

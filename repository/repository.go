@@ -68,7 +68,7 @@ func (r *NewsletterRepository) ListNewsletter(ctx context.Context) ([]model.News
 	return response, nil
 }
 
-func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, newsletter model.Newsletter) (*model.Newsletter, error) {
+func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, name string, description string, ownerId string) (*model.Newsletter, error) {
 	var dbNewsletter dbmodel.Newsletter
 
 	if err := pgxscan.Get(
@@ -77,14 +77,23 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterI
 		&dbNewsletter,
 		query.UpdateNewsletter,
 		pgx.NamedArgs{"id": newsletterID,
-			"name":        newsletter.Name,
-			"description": newsletter.Description,
-			"owner_id":    newsletter.OwnerId,
+			"name":        name,
+			"description": description,
+			"owner_id":    ownerId,
 		},
 	); err != nil {
 		return nil, err
 	}
-	return &model.Newsletter{}, nil
+
+	updatedNewsletter := &model.Newsletter{
+		ID:          dbNewsletter.ID,
+		Name:        dbNewsletter.Name,
+		Description: dbNewsletter.Description,
+		OwnerId:     dbNewsletter.Owner_id,
+		UpdatedAt:   dbNewsletter.UpdatedAt,
+	}
+
+	return updatedNewsletter, nil
 }
 
 func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, newsletter model.Newsletter) error {

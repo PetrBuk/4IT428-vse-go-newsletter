@@ -78,26 +78,28 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// decode JSON body request
 	var newsletter model2.NewsLetter
+
 	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
-		return
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 	}
 
 	ctx := r.Context()
 	userData := ctx.Value("user").(map[string]interface{})
 
-	var serviceNewsletter = model.Newsletter{ID: newsletterID, Name: newsletter.Name, Description: newsletter.Description,
-		OwnerId: userData["user_id"].(string)}
-
-	updatedNewsletter, err := h.service.UpdateNewsletter(r.Context(), serviceNewsletter)
-	if err != nil {
-		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+	if userData == nil {
+		http.Error(w, "User not logged in!", http.StatusForbidden)
 		return
 	}
+	userId := userData["userID"].(string)
 
-	util.WriteResponse(w, http.StatusOK, updatedNewsletter)
+	updated, err := h.service.UpdateNewsletter(ctx, newsletterID, newsletter.Name, newsletter.Description, userId)
+	if err != nil {
+		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+	}
+	message := fmt.Sprintf("newsletter updated successfully! ID: %s, Name: %s, Description: %s, OwnerId: %s, UpdatedAt: %s",
+		updated.ID, updated.Name, updated.Description, updated.OwnerId, updated.UpdatedAt)
+	util.WriteResponse(w, http.StatusOK, message)
 }
 
 func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
