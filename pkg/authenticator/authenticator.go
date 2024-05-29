@@ -14,15 +14,15 @@ func (a JWTAuthenticator) VerifyToken(token string) (map[string]interface{}, err
 	var claims JwtClaims
 	if _, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(a.secret), nil
-	}); err!= nil {
+	}); err != nil {
 		return nil, err
 	}
 
 	result := map[string]interface{}{
-		"role": claims.Role,
+		"role":   claims.Role,
 		"userID": claims.UserID,
-		"email": claims.Email,
-		"token": token,
+		"email":  claims.Email,
+		"token":  token,
 	}
 
 	return result, nil
@@ -31,7 +31,7 @@ func (a JWTAuthenticator) VerifyToken(token string) (map[string]interface{}, err
 type JwtClaims struct {
 	jwt.RegisteredClaims
 
-	Role string 	`json:"role"`
+	Role   string `json:"role"`
 	UserID string `json:"sub"`
-	Email string 	`json:"email"`
+	Email  string `json:"email"`
 }

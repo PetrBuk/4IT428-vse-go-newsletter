@@ -66,7 +66,7 @@ func parseBearerToken(header string) (string, error) {
 	return token, nil
 }
 
-func verifyUserRole (claims map[string]interface{}) error {
+func verifyUserRole(claims map[string]interface{}) error {
 	role, ok := claims["role"].(string)
 
 	if !ok {
