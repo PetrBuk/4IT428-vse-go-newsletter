@@ -47,7 +47,14 @@ func (r *NewsletterRepository) ReadNewsletter(ctx context.Context, newsletterID 
 	); err != nil {
 		return nil, err
 	}
-	return &model.Newsletter{}, nil
+	return &model.Newsletter{
+		ID:          newsletter.ID,
+		Name:        newsletter.Name,
+		Description: newsletter.Description,
+		OwnerId:     newsletter.OwnerId,
+		CreateAt:    newsletter.CreatedAt,
+		UpdatedAt:   newsletter.UpdatedAt,
+	}, nil
 }
 
 func (r *NewsletterRepository) ListNewsletter(ctx context.Context) ([]model.Newsletter, error) {
@@ -63,7 +70,12 @@ func (r *NewsletterRepository) ListNewsletter(ctx context.Context) ([]model.News
 	response := make([]model.Newsletter, len(newsletters))
 	for i, newsletter := range newsletters {
 		response[i] = model.Newsletter{
-			ID: newsletter.ID,
+			ID:          newsletter.ID,
+			Name:        newsletter.Name,
+			Description: newsletter.Description,
+			OwnerId:     newsletter.OwnerId,
+			CreateAt:    newsletter.CreatedAt,
+			UpdatedAt:   newsletter.UpdatedAt,
 		}
 	}
 	return response, nil
@@ -90,7 +102,7 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterI
 		ID:          dbNewsletter.ID,
 		Name:        dbNewsletter.Name,
 		Description: dbNewsletter.Description,
-		OwnerId:     dbNewsletter.Owner_id,
+		OwnerId:     dbNewsletter.OwnerId,
 		UpdatedAt:   dbNewsletter.UpdatedAt,
 	}
 
@@ -136,7 +148,7 @@ func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string
 		ID:          createdNewsletter.ID,
 		Name:        createdNewsletter.Name,
 		Description: createdNewsletter.Description,
-		OwnerId:     createdNewsletter.Owner_id,
+		OwnerId:     createdNewsletter.OwnerId,
 		CreateAt:    createdNewsletter.CreatedAt,
 		UpdatedAt:   createdNewsletter.UpdatedAt,
 	}
