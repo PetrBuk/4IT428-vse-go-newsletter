@@ -113,20 +113,34 @@ func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterI
 
 }
 
-func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (bool, error) {
-	var dbNewsletter dbmodel.Newsletter
+func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (*model.Newsletter, error) {
+	var createdNewsletter dbmodel.Newsletter
 
-	if err := pgxscan.Get(
+	// Execute the SQL insert query with RETURNING clause
+	err := pgxscan.Get(
 		ctx,
 		r.pool,
-		&dbNewsletter,
+		&createdNewsletter,
 		query.CreateNewsletter,
-		pgx.NamedArgs{
-			"name":        name,
+		pgx.NamedArgs{"name": name,
 			"description": description,
-			"owner_id":    ownerId},
-	); err != nil {
-		return true, err
+			"owner_id":    ownerId,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create newsletter: %w", err)
 	}
-	return false, nil
+
+	// Convert the db model to the application model
+	newNewsletter := &model.Newsletter{
+		ID:          createdNewsletter.ID,
+		Name:        createdNewsletter.Name,
+		Description: createdNewsletter.Description,
+		OwnerId:     createdNewsletter.Owner_id,
+		CreateAt:    createdNewsletter.CreatedAt,
+		UpdatedAt:   createdNewsletter.UpdatedAt,
+	}
+
+	// Return the newly created newsletter object
+	return newNewsletter, nil
 }

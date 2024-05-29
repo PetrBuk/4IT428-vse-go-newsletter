@@ -41,7 +41,9 @@ func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
 	}
-	util.WriteResponse(w, http.StatusOK, created)
+	message := fmt.Sprintf("Newsletter created successfully! ID: %s, Name: %s, Description: %s, OwnerId: %s, CretedAt: %s\", UpdatedAt: %s",
+		created.ID, created.Name, created.Description, created.OwnerId, created.CreateAt, created.UpdatedAt)
+	util.WriteResponse(w, http.StatusOK, message)
 }
 
 func (h *Handler) GetNewsletter(w http.ResponseWriter, r *http.Request) {
