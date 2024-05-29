@@ -8,8 +8,12 @@ import (
 )
 
 // CreateNewsletter saves newsletter in map under email as a key.
-func (Service) CreateNewsletter(_ context.Context, newsletter model.Newsletter) error {
-	panic("not implemented")
+func (s Service) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (bool, error) {
+	created, err := s.repository.CreateNewsletter(ctx, name, description, ownerId)
+	if err != nil {
+		return false, err
+	}
+	return created, err
 }
 
 // ListNewsletters returns list of newsletters in array of newsletters.
@@ -32,11 +36,20 @@ func (s Service) GetNewsletter(ctx context.Context, newsletterID id.Newsletter) 
 }
 
 // UpdateNewsletter updates attributes of a specified newsletter.
-func (Service) UpdateNewsletter(_ context.Context, newsletterId id.Newsletter, newsletter model.Newsletter) (*model.Newsletter, error) {
-	panic("not implemented")
+func (s Service) UpdateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
+	//panic("not implemented")
+	dbNewsletter, err := s.repository.UpdateNewsletter(ctx, newsletter.ID, newsletter)
+	if err != nil {
+		return nil, err
+	}
+	return dbNewsletter, nil
 }
 
 // DeleteNewsletter deletes newsletter from memory.
-func (Service) DeleteNewsletter(_ context.Context, newsletterId id.Newsletter) error {
-	panic("not implemented")
+func (s Service) DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) error {
+	err := s.repository.DeleteNewsletter(ctx, newsletter.ID, newsletter)
+	if err != nil {
+		return err
+	}
+	return nil
 }

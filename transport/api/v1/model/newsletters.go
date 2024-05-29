@@ -1,5 +1,7 @@
 package model
 
 type NewsLetter struct {
-	Name	string `json:"name" validate:"required"`
+	ID          string `json:"id"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description"`
 }
