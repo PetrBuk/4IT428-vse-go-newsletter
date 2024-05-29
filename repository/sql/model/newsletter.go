@@ -12,5 +12,5 @@ type Newsletter struct {
 	UpdatedAt   time.Time     `db:"updated_at"`
 	Name        string        `db:"name"`
 	Description string        `db:"description"`
-	Owner_id    string        `db:"owner_id"`
+	OwnerId     string        `db:"owner_id"`
 }
