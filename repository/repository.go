@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"vse-go-newsletter-api/pkg/id"
 	dbmodel "vse-go-newsletter-api/repository/sql/model"
@@ -96,21 +97,20 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterI
 	return updatedNewsletter, nil
 }
 
-func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, newsletter model.Newsletter) error {
-	var dbNewsletter dbmodel.Newsletter
-
-	if err := pgxscan.Get(
+func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, ownerId string) (string, error) {
+	if _, err := r.pool.Exec(
 		ctx,
-		r.pool,
-		&dbNewsletter,
 		query.DeleteNewsletter,
 		pgx.NamedArgs{"id": newsletterID,
-			"owner_id": newsletter.OwnerId,
+			"owner_id": ownerId,
 		},
 	); err != nil {
-		return err
+		message := fmt.Sprintf("newsletter not deleted! ID: %s", newsletterID)
+		return message, err
 	}
-	return nil
+	message := fmt.Sprintf("newsletter deleted successfully! ID: %s", newsletterID)
+	return message, nil
+
 }
 
 func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (bool, error) {
@@ -126,7 +126,7 @@ func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string
 			"description": description,
 			"owner_id":    ownerId},
 	); err != nil {
-		return false, err
+		return true, err
 	}
-	return true, nil
+	return false, nil
 }

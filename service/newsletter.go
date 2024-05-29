@@ -45,10 +45,10 @@ func (s Service) UpdateNewsletter(ctx context.Context, newsletterID id.Newslette
 }
 
 // DeleteNewsletter deletes newsletter from memory.
-func (s Service) DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) error {
-	err := s.repository.DeleteNewsletter(ctx, newsletter.ID, newsletter)
+func (s Service) DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, ownerId string) (string, error) {
+	deleted, err := s.repository.DeleteNewsletter(ctx, newsletterID, ownerId)
 	if err != nil {
-		return err
+		return deleted, err
 	}
-	return nil
+	return deleted, err
 }

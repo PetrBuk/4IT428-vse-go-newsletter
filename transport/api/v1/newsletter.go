@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net/http"
 	"vse-go-newsletter-api/pkg/id"
-	"vse-go-newsletter-api/service/model"
 	model2 "vse-go-newsletter-api/transport/api/v1/model"
 	"vse-go-newsletter-api/transport/util"
 
@@ -109,24 +108,18 @@ func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// decode JSON body request
-	var newsletter model2.NewsLetter
-	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
-		return
-	}
-
 	ctx := r.Context()
 	userData := ctx.Value("user").(map[string]interface{})
 
-	var serviceNewsletter = model.Newsletter{ID: newsletterID, Name: newsletter.Name, Description: newsletter.Description,
-		OwnerId: userData["user_id"].(string)}
-
-	err := h.service.DeleteNewsletter(r.Context(), serviceNewsletter)
-	if err != nil {
-		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+	if userData == nil {
+		http.Error(w, "User not logged in!", http.StatusForbidden)
 		return
 	}
+	userId := userData["userID"].(string)
 
-	util.WriteResponse(w, http.StatusOK, newsletterID)
+	deleted, err := h.service.DeleteNewsletter(ctx, newsletterID, userId)
+	if err != nil {
+		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+	}
+	util.WriteResponse(w, http.StatusOK, deleted)
 }
