@@ -14,9 +14,9 @@ func (s Service) Login(ctx context.Context, email string, password string) (*typ
 
 func (s Service) Register(ctx context.Context, email string, password string) (*types.SignupResponse, error) {
 	signupData := types.SignupRequest{
-			Email: email,
-			Password: password,
-		}
+		Email:    email,
+		Password: password,
+	}
 
 	settings, err := s.authClient.Signup(signupData)
 
@@ -34,8 +34,8 @@ func (s Service) ChangePassword(ctx context.Context, jwtToken string, email stri
 	}
 
 	requestData := types.UpdateUserRequest{
-			Password: &newPassword,
-		}
+		Password: &newPassword,
+	}
 
 	loggedClient := s.authClient.WithToken(jwtToken)
 
@@ -50,11 +50,11 @@ func (s Service) ChangePassword(ctx context.Context, jwtToken string, email stri
 
 func (s Service) Verify(ctx context.Context, verificationType types.VerificationType, email string, otpToken string) (*types.VerifyForUserResponse, error) {
 	requestData := types.VerifyForUserRequest{
-			Type: verificationType,
-			Token: otpToken,
-			Email: email,
-			RedirectTo: "http://localhost:3000",
-		}
+		Type:       verificationType,
+		Token:      otpToken,
+		Email:      email,
+		RedirectTo: "http://localhost:3000",
+	}
 
 	resp, err := s.authClient.VerifyForUser(requestData)
 
