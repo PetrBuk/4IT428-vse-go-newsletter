@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"vse-go-newsletter-api/pkg/id"
@@ -17,6 +18,15 @@ func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	if newsletter.Name == "" || newsletter.Description == "" {
+		http.Error(w,
+			fmt.Sprintf("Invalid request body, name or description can´t be nil! \nName: %s \nDescription: %s",
+				newsletter.Name,
+				newsletter.Description),
+			http.StatusBadRequest)
+		return
 	}
 
 	ctx := r.Context()
