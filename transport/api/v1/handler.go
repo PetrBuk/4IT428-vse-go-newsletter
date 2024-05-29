@@ -46,5 +46,13 @@ func (h *Handler) initRouter() {
 		r.With(authenticate).Delete("/{id}", h.DeleteNewsletter)
 	})
 
+	r.Route("/post", func(r chi.Router) {
+		r.With(authenticate).Get("/", h.ListPosts)
+		r.With(authenticate).Post("/add", h.CreatePost)
+		r.With(authenticate).Get("/{id}", h.GetPost)
+		r.With(authenticate).Put("/{id}", h.UpdatePost)
+		r.With(authenticate).Delete("/{id}", h.DeletePost)
+	})
+
 	h.Mux = r
 }

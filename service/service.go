@@ -15,6 +15,11 @@ type Repository interface {
 	UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, name string, description string, ownerId string) (*model.Newsletter, error)
 	DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, ownerId string) (string, error)
 	CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (*model.Newsletter, error)
+	CreatePost(ctx context.Context, title string, content string, newsletterId string) (bool, error)
+	ListPosts(ctx context.Context) (model.Post, error)
+	GetPost(ctx context.Context, newsletterId string) (*model.Post, error)
+	UpdatePost(ctx context.Context, newsletter model.Post) (*model.Post, error)
+	DeletePost(ctx context.Context, newsletter model.Post) error
 }
 
 type Service struct {

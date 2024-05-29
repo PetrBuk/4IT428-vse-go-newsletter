@@ -21,4 +21,10 @@ type RouteService interface {
 	GetNewsletter(ctx context.Context, newsletterId id.Newsletter) (*svcmodel.Newsletter, error)
 	UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, name string, description string, ownerId string) (*svcmodel.Newsletter, error)
 	DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, ownerId string) (string, error)
+	// Post handlers
+	CreatePost(ctx context.Context, title string, content string, newsletterId string) (bool, error)
+	ListPosts(ctx context.Context) ([]svcmodel.Post, error)
+	GetPost(ctx context.Context, newsletterId string) (*svcmodel.Post, error)
+	UpdatePost(ctx context.Context, newsletter svcmodel.Post) (*svcmodel.Post, error)
+	DeletePost(ctx context.Context, newsletter svcmodel.Post) error
 }
