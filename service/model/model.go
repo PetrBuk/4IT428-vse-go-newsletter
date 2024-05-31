@@ -17,8 +17,8 @@ type Newsletter struct {
 
 type Post struct {
 	ID           string
-	createAt     time.Time
+	CreatedAt    time.Time
 	Title        string
 	Content      string
-	NewsletterId string
+	NewsletterId id.Newsletter
 }

@@ -7,9 +7,9 @@ import (
 )
 
 type Post struct {
-	ID            string        `db:"id"`
-	CreatedAt     time.Time     `db:"created_at"`
-	Title         string        `db:"title"`
-	Content       string        `db:"content"`
-	Newsletter_id id.Newsletter `db:"newsletter_id"`
+	ID           string        `db:"id"`
+	CreatedAt    time.Time     `db:"created_at"`
+	Title        string        `db:"title"`
+	Content      string        `db:"content"`
+	NewsletterId id.Newsletter `db:"newsletter_id"`
 }

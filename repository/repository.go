@@ -16,11 +16,13 @@ import (
 
 type Repository struct {
 	*NewsletterRepository
+	*PostRepository
 }
 
 func New(pool *pgxpool.Pool) (*Repository, error) {
 	return &Repository{
 		NewsletterRepository: NewNewsletterRepository(pool),
+		PostRepository:       NewPostRepository(pool),
 	}, nil
 }
 
@@ -30,6 +32,16 @@ type NewsletterRepository struct {
 
 func NewNewsletterRepository(pool *pgxpool.Pool) *NewsletterRepository {
 	return &NewsletterRepository{
+		pool: pool,
+	}
+}
+
+type PostRepository struct {
+	pool *pgxpool.Pool
+}
+
+func NewPostRepository(pool *pgxpool.Pool) *PostRepository {
+	return &PostRepository{
 		pool: pool,
 	}
 }
@@ -155,4 +167,52 @@ func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string
 
 	// Return the newly created newsletter object
 	return newNewsletter, nil
+}
+
+func (r *PostRepository) CreatePost(ctx context.Context, title string, content string, newsletterId string) (*model.Post, error) {
+	var createdPost dbmodel.Post
+	var convertedNewsletterId id.Newsletter
+	conversionErr := convertedNewsletterId.FromString(newsletterId)
+	if conversionErr != nil {
+		return nil, fmt.Errorf("failed to format newsletter_id: %w", conversionErr)
+	}
+
+	err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&createdPost,
+		query.CreatePost,
+		pgx.NamedArgs{
+			"title":         title,
+			"content":       content,
+			"newsletter_id": newsletterId,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create post: %w", err)
+	}
+	newPost := &model.Post{
+		ID:           createdPost.ID,
+		Title:        createdPost.Title,
+		Content:      createdPost.Content,
+		NewsletterId: createdPost.NewsletterId,
+		CreatedAt:    createdPost.CreatedAt,
+	}
+	return newPost, nil
+}
+
+func (r *PostRepository) ListPosts(ctx context.Context) ([]model.Post, error) {
+	panic("Not Implementeda")
+}
+
+func (r *PostRepository) GetPost(ctx context.Context, newsletterId string) (*model.Post, error) {
+	panic("Not Implementeda")
+}
+
+func (r *PostRepository) UpdatePost(ctx context.Context, newsletter model.Post) (*model.Post, error) {
+	panic("Not Implementeda")
+}
+
+func (r *PostRepository) DeletePost(ctx context.Context, newsletter model.Post) error {
+	panic("Not Implementeda")
 }
