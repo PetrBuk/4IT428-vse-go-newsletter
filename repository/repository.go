@@ -139,7 +139,7 @@ func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletter 
 		message := fmt.Sprintf("no newsletter found to delete or you are not allowed to delete it. ID: %s", newsletter.ID)
 		return message, fmt.Errorf("no rows affected\n")
 	}
-	message := fmt.Sprintf("post deleted successfully! ID: %s", newsletter.ID)
+	message := fmt.Sprintf("newsletter deleted successfully! ID: %s", newsletter.ID)
 	return message, nil
 }
 
@@ -200,6 +200,7 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post, userId
 		Title:        createdPost.Title,
 		Content:      createdPost.Content,
 		NewsletterId: createdPost.NewsletterId,
+		IsPublished:  createdPost.IsPublished,
 	}
 	return newPost, nil
 }
@@ -223,6 +224,7 @@ func (r *PostRepository) ListPosts(ctx context.Context) ([]model.Post, error) {
 			NewsletterId: post.NewsletterId,
 			CreatedAt:    post.CreatedAt,
 			UpdatedAt:    post.UpdatedAt,
+			IsPublished:  post.IsPublished,
 		}
 	}
 	return response, nil
@@ -248,6 +250,7 @@ func (r *PostRepository) ReadPost(ctx context.Context, postId string) (*model.Po
 		NewsletterId: post.NewsletterId,
 		CreatedAt:    post.CreatedAt,
 		UpdatedAt:    post.UpdatedAt,
+		IsPublished:  post.IsPublished,
 	}, nil
 
 }
@@ -261,10 +264,9 @@ func (r *PostRepository) UpdatePost(ctx context.Context, post model.Post, userId
 		&dbPost,
 		query.UpdatePost,
 		pgx.NamedArgs{"id": post.ID,
-			"title":         post.Title,
-			"content":       post.Content,
-			"newsletter_id": post.NewsletterId,
-			"user_id":       userId,
+			"title":   post.Title,
+			"content": post.Content,
+			"user_id": userId,
 		},
 	); err != nil {
 		return nil, err
@@ -277,27 +279,55 @@ func (r *PostRepository) UpdatePost(ctx context.Context, post model.Post, userId
 		NewsletterId: dbPost.NewsletterId,
 		CreatedAt:    dbPost.CreatedAt,
 		UpdatedAt:    dbPost.UpdatedAt,
+		IsPublished:  dbPost.IsPublished,
 	}
 
 	return updatedPost, nil
 }
 
-func (r *PostRepository) DeletePost(ctx context.Context, post model.Post, userId string) (string, error) {
+func (r *PostRepository) DeletePost(ctx context.Context, postId string, userId string) (string, error) {
 	result, err := r.pool.Exec(ctx, query.DeletePost, pgx.NamedArgs{
-		"id":            post.ID,
-		"newsletter_id": post.NewsletterId,
-		"user_id":       userId,
+		"id":      postId,
+		"user_id": userId,
 	})
 
 	if err != nil {
-		message := fmt.Sprintf("post not deleted! ID: %s", post.ID)
+		message := fmt.Sprintf("post not deleted! ID: %s", postId)
 		return message, err
 	}
 
 	if result.RowsAffected() == 0 {
-		message := fmt.Sprintf("no post found to delete or you are not allowed to delete it. ID: %s", post.ID)
+		message := fmt.Sprintf("no post found to delete or you are not allowed to delete it. ID: %s", postId)
 		return message, fmt.Errorf("no rows affected\n")
 	}
-	message := fmt.Sprintf("post deleted successfully! ID: %s", post.ID)
+	message := fmt.Sprintf("post deleted successfully! ID: %s", postId)
 	return message, nil
+}
+
+func (r *PostRepository) PublishPost(ctx context.Context, postId string, userId string) (*model.Post, error) {
+	var dbPost dbmodel.Post
+
+	if err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&dbPost,
+		query.PublishPost,
+		pgx.NamedArgs{"id": postId,
+			"user_id": userId,
+		},
+	); err != nil {
+		return nil, err
+	}
+
+	updatedPost := &model.Post{
+		ID:           dbPost.ID,
+		Title:        dbPost.Title,
+		Content:      dbPost.Content,
+		NewsletterId: dbPost.NewsletterId,
+		CreatedAt:    dbPost.CreatedAt,
+		UpdatedAt:    dbPost.UpdatedAt,
+		IsPublished:  dbPost.IsPublished,
+	}
+
+	return updatedPost, nil
 }

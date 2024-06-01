@@ -36,10 +36,18 @@ func (s Service) UpdatePost(ctx context.Context, post svcmodel.Post, userId stri
 	}
 	return updatedPost, err
 }
-func (s Service) DeletePost(ctx context.Context, post svcmodel.Post, userId string) (string, error) {
-	deleted, err := s.repository.DeletePost(ctx, post, userId)
+func (s Service) DeletePost(ctx context.Context, postId string, userId string) (string, error) {
+	deleted, err := s.repository.DeletePost(ctx, postId, userId)
 	if err != nil {
 		return deleted, err
 	}
 	return deleted, err
+}
+
+func (s Service) PublishPost(ctx context.Context, postId string, userId string) (*svcmodel.Post, error) {
+	updatedPost, err := s.repository.PublishPost(ctx, postId, userId)
+	if err != nil {
+		return nil, err
+	}
+	return updatedPost, err
 }

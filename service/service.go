@@ -19,7 +19,8 @@ type Repository interface {
 	ListPosts(ctx context.Context) ([]model.Post, error)
 	ReadPost(ctx context.Context, postId string) (*model.Post, error)
 	UpdatePost(ctx context.Context, post model.Post, userId string) (*model.Post, error)
-	DeletePost(ctx context.Context, post model.Post, userId string) (string, error)
+	DeletePost(ctx context.Context, postId string, userId string) (string, error)
+	PublishPost(ctx context.Context, postId string, userId string) (*model.Post, error)
 }
 
 type Service struct {

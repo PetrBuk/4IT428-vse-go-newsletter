@@ -29,4 +29,6 @@ var (
 	DeletePost string
 	//go:embed scripts/post/Create.sql
 	CreatePost string
+	//go:embed scripts/post/Publish.sql
+	PublishPost string
 )

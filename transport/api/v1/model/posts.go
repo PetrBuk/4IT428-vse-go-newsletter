@@ -6,5 +6,5 @@ type Post struct {
 	ID           string        `json:"id"`
 	Title        string        `json:"title" validate:"required"`
 	Content      string        `json:"content" validate:"required"`
-	NewsletterId id.Newsletter `json:"newsletterId" validate:"required"`
+	NewsletterId id.Newsletter `json:"newsletterId"`
 }

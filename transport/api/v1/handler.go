@@ -52,6 +52,7 @@ func (h *Handler) initRouter() {
 		r.With(authenticate).Get("/{id}", h.GetPost)
 		r.With(authenticate).Put("/{id}", h.UpdatePost)
 		r.With(authenticate).Delete("/{id}", h.DeletePost)
+		r.With(authenticate).Put("/{id}/publish", h.PublishPost)
 	})
 
 	h.Mux = r

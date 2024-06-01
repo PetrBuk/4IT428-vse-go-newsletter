@@ -40,6 +40,7 @@ func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
 	created, err := h.service.CreateNewsletter(ctx, serviceNewsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+		return
 	}
 	message := fmt.Sprintf("Newsletter created successfully!  ID: %s, Name: %s,  Description: %s,  OwnerId: %s,  CretedAt: %s\",  UpdatedAt: %s",
 		created.ID, created.Name, created.Description, created.OwnerId, created.CreateAt, created.UpdatedAt)
@@ -76,6 +77,7 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
 	}
 
 	ctx, userId, isUserIdOk := getUserId(w, r)
@@ -88,6 +90,7 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 	updated, err := h.service.UpdateNewsletter(ctx, serviceNewsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+		return
 	}
 	message := fmt.Sprintf("newsletter updated successfully!  ID: %s,  Name: %s, Description: %s, OwnerId: %s,  UpdatedAt: %s",
 		updated.ID, updated.Name, updated.Description, updated.OwnerId, updated.UpdatedAt)
@@ -107,6 +110,7 @@ func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
 	deleted, err := h.service.DeleteNewsletter(ctx, serviceNewsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
+		return
 	}
 	util.WriteResponse(w, http.StatusOK, deleted)
 }

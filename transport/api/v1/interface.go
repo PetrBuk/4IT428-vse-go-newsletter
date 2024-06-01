@@ -26,5 +26,6 @@ type RouteService interface {
 	ListPosts(ctx context.Context) ([]svcmodel.Post, error)
 	GetPost(ctx context.Context, postId string) (*svcmodel.Post, error)
 	UpdatePost(ctx context.Context, post svcmodel.Post, userId string) (*svcmodel.Post, error)
-	DeletePost(ctx context.Context, post svcmodel.Post, userId string) (string, error)
+	DeletePost(ctx context.Context, postId string, userId string) (string, error)
+	PublishPost(ctx context.Context, postId string, userId string) (*svcmodel.Post, error)
 }
