@@ -8,8 +8,8 @@ import (
 )
 
 // CreateNewsletter saves newsletter in map under email as a key.
-func (s Service) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (*model.Newsletter, error) {
-	created, err := s.repository.CreateNewsletter(ctx, name, description, ownerId)
+func (s Service) CreateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
+	created, err := s.repository.CreateNewsletter(ctx, newsletter)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +36,8 @@ func (s Service) GetNewsletter(ctx context.Context, newsletterID id.Newsletter) 
 }
 
 // UpdateNewsletter updates attributes of a specified newsletter.
-func (s Service) UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, name string, description string, ownerId string) (*model.Newsletter, error) {
-	updatedNewsletter, err := s.repository.UpdateNewsletter(ctx, newsletterID, name, description, ownerId)
+func (s Service) UpdateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
+	updatedNewsletter, err := s.repository.UpdateNewsletter(ctx, newsletter)
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +45,8 @@ func (s Service) UpdateNewsletter(ctx context.Context, newsletterID id.Newslette
 }
 
 // DeleteNewsletter deletes newsletter from memory.
-func (s Service) DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, ownerId string) (string, error) {
-	deleted, err := s.repository.DeleteNewsletter(ctx, newsletterID, ownerId)
+func (s Service) DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) (string, error) {
+	deleted, err := s.repository.DeleteNewsletter(ctx, newsletter)
 	if err != nil {
 		return deleted, err
 	}

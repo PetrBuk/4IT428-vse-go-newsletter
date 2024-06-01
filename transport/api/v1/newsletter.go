@@ -1,11 +1,13 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"vse-go-newsletter-api/pkg/id"
+	"vse-go-newsletter-api/service/model"
 	model2 "vse-go-newsletter-api/transport/api/v1/model"
 	"vse-go-newsletter-api/transport/util"
 
@@ -28,29 +30,24 @@ func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	userData := ctx.Value("user").(map[string]interface{})
-
-	if userData == nil {
-		http.Error(w, "User not logged in!", http.StatusForbidden)
+	ctx, userId, isUserIdOk := getUserId(w, r)
+	if isUserIdOk {
 		return
 	}
-	userId := userData["userID"].(string)
 
-	created, err := h.service.CreateNewsletter(ctx, newsletter.Name, newsletter.Description, userId)
+	var serviceNewsletter = model.Newsletter{Name: newsletter.Name, Description: newsletter.Description, OwnerId: userId}
+
+	created, err := h.service.CreateNewsletter(ctx, serviceNewsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
 	}
-	message := fmt.Sprintf("Newsletter created successfully! ID: %s, Name: %s, Description: %s, OwnerId: %s, CretedAt: %s\", UpdatedAt: %s",
+	message := fmt.Sprintf("Newsletter created successfully!  ID: %s, Name: %s,  Description: %s,  OwnerId: %s,  CretedAt: %s\",  UpdatedAt: %s",
 		created.ID, created.Name, created.Description, created.OwnerId, created.CreateAt, created.UpdatedAt)
 	util.WriteResponse(w, http.StatusOK, message)
 }
 
 func (h *Handler) GetNewsletter(w http.ResponseWriter, r *http.Request) {
-	var newsletterID id.Newsletter
-	if err := newsletterID.FromString(chi.URLParam(r, "id")); err != nil {
-		http.Error(w, "invalid newsletter ID", http.StatusBadRequest)
-	}
+	newsletterID := getNewsletterId(w, r)
 
 	newsletter, err := h.service.GetNewsletter(r.Context(), newsletterID)
 	if err != nil {
@@ -73,11 +70,7 @@ func (h *Handler) ListNewsletters(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
-	var newsletterID id.Newsletter
-	if err := newsletterID.FromString(chi.URLParam(r, "id")); err != nil {
-		http.Error(w, "invalid newsletter ID", http.StatusBadRequest)
-		return
-	}
+	newsletterID := getNewsletterId(w, r)
 
 	var newsletter model2.NewsLetter
 
@@ -85,43 +78,54 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 	}
 
-	ctx := r.Context()
-	userData := ctx.Value("user").(map[string]interface{})
-
-	if userData == nil {
-		http.Error(w, "User not logged in!", http.StatusForbidden)
+	ctx, userId, isUserIdOk := getUserId(w, r)
+	if isUserIdOk {
 		return
 	}
-	userId := userData["userID"].(string)
 
-	updated, err := h.service.UpdateNewsletter(ctx, newsletterID, newsletter.Name, newsletter.Description, userId)
+	var serviceNewsletter = model.Newsletter{ID: newsletterID, Name: newsletter.Name, Description: newsletter.Description, OwnerId: userId}
+
+	updated, err := h.service.UpdateNewsletter(ctx, serviceNewsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
 	}
-	message := fmt.Sprintf("newsletter updated successfully! ID: %s, Name: %s, Description: %s, OwnerId: %s, UpdatedAt: %s",
+	message := fmt.Sprintf("newsletter updated successfully!  ID: %s,  Name: %s, Description: %s, OwnerId: %s,  UpdatedAt: %s",
 		updated.ID, updated.Name, updated.Description, updated.OwnerId, updated.UpdatedAt)
 	util.WriteResponse(w, http.StatusOK, message)
 }
 
 func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
-	var newsletterID id.Newsletter
-	if err := newsletterID.FromString(chi.URLParam(r, "id")); err != nil {
-		http.Error(w, "invalid newsletter ID", http.StatusBadRequest)
+	newsletterID := getNewsletterId(w, r)
+
+	ctx, userId, isUserIdOk := getUserId(w, r)
+	if isUserIdOk {
 		return
 	}
 
-	ctx := r.Context()
-	userData := ctx.Value("user").(map[string]interface{})
+	var serviceNewsletter = model.Newsletter{ID: newsletterID, OwnerId: userId}
 
-	if userData == nil {
-		http.Error(w, "User not logged in!", http.StatusForbidden)
-		return
-	}
-	userId := userData["userID"].(string)
-
-	deleted, err := h.service.DeleteNewsletter(ctx, newsletterID, userId)
+	deleted, err := h.service.DeleteNewsletter(ctx, serviceNewsletter)
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
 	}
 	util.WriteResponse(w, http.StatusOK, deleted)
+}
+
+func getUserId(w http.ResponseWriter, r *http.Request) (context.Context, string, bool) {
+	ctx := r.Context()
+	userData := ctx.Value("user").(map[string]interface{})
+	if userData == nil {
+		http.Error(w, "User not logged in!", http.StatusForbidden)
+		return nil, "", true
+	}
+	userId := userData["userID"].(string)
+	return ctx, userId, false
+}
+
+func getNewsletterId(w http.ResponseWriter, r *http.Request) id.Newsletter {
+	var newsletterID id.Newsletter
+	if err := newsletterID.FromString(chi.URLParam(r, "id")); err != nil {
+		http.Error(w, "invalid newsletter ID", http.StatusBadRequest)
+	}
+	return newsletterID
 }

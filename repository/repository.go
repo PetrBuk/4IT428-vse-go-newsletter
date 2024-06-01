@@ -93,7 +93,7 @@ func (r *NewsletterRepository) ListNewsletter(ctx context.Context) ([]model.News
 	return response, nil
 }
 
-func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterID id.Newsletter, name string, description string, ownerId string) (*model.Newsletter, error) {
+func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
 	var dbNewsletter dbmodel.Newsletter
 
 	if err := pgxscan.Get(
@@ -101,10 +101,10 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterI
 		r.pool,
 		&dbNewsletter,
 		query.UpdateNewsletter,
-		pgx.NamedArgs{"id": newsletterID,
-			"name":        name,
-			"description": description,
-			"owner_id":    ownerId,
+		pgx.NamedArgs{"id": newsletter.ID,
+			"name":        newsletter.Name,
+			"description": newsletter.Description,
+			"owner_id":    newsletter.OwnerId,
 		},
 	); err != nil {
 		return nil, err
@@ -121,23 +121,29 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletterI
 	return updatedNewsletter, nil
 }
 
-func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterID id.Newsletter, ownerId string) (string, error) {
-	if _, err := r.pool.Exec(
+func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) (string, error) {
+	result, err := r.pool.Exec(
 		ctx,
 		query.DeleteNewsletter,
-		pgx.NamedArgs{"id": newsletterID,
-			"owner_id": ownerId,
+		pgx.NamedArgs{"id": newsletter.ID,
+			"owner_id": newsletter.OwnerId,
 		},
-	); err != nil {
-		message := fmt.Sprintf("newsletter not deleted! ID: %s", newsletterID)
+	)
+
+	if err != nil {
+		message := fmt.Sprintf("newsletter not deleted! ID: %s", newsletter.ID)
 		return message, err
 	}
-	message := fmt.Sprintf("newsletter deleted successfully! ID: %s", newsletterID)
-	return message, nil
 
+	if result.RowsAffected() == 0 {
+		message := fmt.Sprintf("no newsletter found to delete or you are not allowed to delete it. ID: %s", newsletter.ID)
+		return message, fmt.Errorf("no rows affected\n")
+	}
+	message := fmt.Sprintf("post deleted successfully! ID: %s", newsletter.ID)
+	return message, nil
 }
 
-func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string, description string, ownerId string) (*model.Newsletter, error) {
+func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
 	var createdNewsletter dbmodel.Newsletter
 
 	// Execute the SQL insert query with RETURNING clause
@@ -146,9 +152,9 @@ func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string
 		r.pool,
 		&createdNewsletter,
 		query.CreateNewsletter,
-		pgx.NamedArgs{"name": name,
-			"description": description,
-			"owner_id":    ownerId,
+		pgx.NamedArgs{"name": newsletter.Name,
+			"description": newsletter.Description,
+			"owner_id":    newsletter.OwnerId,
 		},
 	)
 	if err != nil {
@@ -169,13 +175,8 @@ func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, name string
 	return newNewsletter, nil
 }
 
-func (r *PostRepository) CreatePost(ctx context.Context, title string, content string, newsletterId string) (*model.Post, error) {
+func (r *PostRepository) CreatePost(ctx context.Context, post model.Post, userId string) (*model.Post, error) {
 	var createdPost dbmodel.Post
-	var convertedNewsletterId id.Newsletter
-	conversionErr := convertedNewsletterId.FromString(newsletterId)
-	if conversionErr != nil {
-		return nil, fmt.Errorf("failed to format newsletter_id: %w", conversionErr)
-	}
 
 	err := pgxscan.Get(
 		ctx,
@@ -183,9 +184,10 @@ func (r *PostRepository) CreatePost(ctx context.Context, title string, content s
 		&createdPost,
 		query.CreatePost,
 		pgx.NamedArgs{
-			"title":         title,
-			"content":       content,
-			"newsletter_id": newsletterId,
+			"title":         post.Title,
+			"content":       post.Content,
+			"newsletter_id": post.NewsletterId,
+			"user_id":       userId,
 		},
 	)
 	if err != nil {
@@ -193,26 +195,109 @@ func (r *PostRepository) CreatePost(ctx context.Context, title string, content s
 	}
 	newPost := &model.Post{
 		ID:           createdPost.ID,
+		CreatedAt:    createdPost.CreatedAt,
+		UpdatedAt:    createdPost.UpdatedAt,
 		Title:        createdPost.Title,
 		Content:      createdPost.Content,
 		NewsletterId: createdPost.NewsletterId,
-		CreatedAt:    createdPost.CreatedAt,
 	}
 	return newPost, nil
 }
 
 func (r *PostRepository) ListPosts(ctx context.Context) ([]model.Post, error) {
-	panic("Not Implementeda")
+	var posts []dbmodel.Post
+	if err := pgxscan.Select(
+		ctx,
+		r.pool,
+		&posts,
+		query.ListPost,
+	); err != nil {
+		return nil, err
+	}
+	response := make([]model.Post, len(posts))
+	for i, post := range posts {
+		response[i] = model.Post{
+			ID:           post.ID,
+			Title:        post.Title,
+			Content:      post.Content,
+			NewsletterId: post.NewsletterId,
+			CreatedAt:    post.CreatedAt,
+			UpdatedAt:    post.UpdatedAt,
+		}
+	}
+	return response, nil
 }
 
-func (r *PostRepository) GetPost(ctx context.Context, newsletterId string) (*model.Post, error) {
-	panic("Not Implementeda")
+func (r *PostRepository) ReadPost(ctx context.Context, postId string) (*model.Post, error) {
+	var post dbmodel.Post
+	if err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&post,
+		query.ReadPost,
+		pgx.NamedArgs{
+			"id": postId,
+		},
+	); err != nil {
+		return nil, err
+	}
+	return &model.Post{
+		ID:           post.ID,
+		Title:        post.Title,
+		Content:      post.Content,
+		NewsletterId: post.NewsletterId,
+		CreatedAt:    post.CreatedAt,
+		UpdatedAt:    post.UpdatedAt,
+	}, nil
+
 }
 
-func (r *PostRepository) UpdatePost(ctx context.Context, newsletter model.Post) (*model.Post, error) {
-	panic("Not Implementeda")
+func (r *PostRepository) UpdatePost(ctx context.Context, post model.Post, userId string) (*model.Post, error) {
+	var dbPost dbmodel.Post
+
+	if err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&dbPost,
+		query.UpdatePost,
+		pgx.NamedArgs{"id": post.ID,
+			"title":         post.Title,
+			"content":       post.Content,
+			"newsletter_id": post.NewsletterId,
+			"user_id":       userId,
+		},
+	); err != nil {
+		return nil, err
+	}
+
+	updatedPost := &model.Post{
+		ID:           dbPost.ID,
+		Title:        dbPost.Title,
+		Content:      dbPost.Content,
+		NewsletterId: dbPost.NewsletterId,
+		CreatedAt:    dbPost.CreatedAt,
+		UpdatedAt:    dbPost.UpdatedAt,
+	}
+
+	return updatedPost, nil
 }
 
-func (r *PostRepository) DeletePost(ctx context.Context, newsletter model.Post) error {
-	panic("Not Implementeda")
+func (r *PostRepository) DeletePost(ctx context.Context, post model.Post, userId string) (string, error) {
+	result, err := r.pool.Exec(ctx, query.DeletePost, pgx.NamedArgs{
+		"id":            post.ID,
+		"newsletter_id": post.NewsletterId,
+		"user_id":       userId,
+	})
+
+	if err != nil {
+		message := fmt.Sprintf("post not deleted! ID: %s", post.ID)
+		return message, err
+	}
+
+	if result.RowsAffected() == 0 {
+		message := fmt.Sprintf("no post found to delete or you are not allowed to delete it. ID: %s", post.ID)
+		return message, fmt.Errorf("no rows affected\n")
+	}
+	message := fmt.Sprintf("post deleted successfully! ID: %s", post.ID)
+	return message, nil
 }

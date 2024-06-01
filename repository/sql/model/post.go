@@ -12,4 +12,5 @@ type Post struct {
 	Title        string        `db:"title"`
 	Content      string        `db:"content"`
 	NewsletterId id.Newsletter `db:"newsletter_id"`
+	UpdatedAt    time.Time     `db:"updated_at"`
 }

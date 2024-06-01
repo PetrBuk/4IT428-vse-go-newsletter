@@ -5,8 +5,8 @@ import (
 	svcmodel "vse-go-newsletter-api/service/model"
 )
 
-func (s Service) CreatePost(ctx context.Context, title string, content string, newsletterId string) (*svcmodel.Post, error) {
-	created, err := s.repository.CreatePost(ctx, title, content, newsletterId)
+func (s Service) CreatePost(ctx context.Context, post svcmodel.Post, userId string) (*svcmodel.Post, error) {
+	created, err := s.repository.CreatePost(ctx, post, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -14,15 +14,32 @@ func (s Service) CreatePost(ctx context.Context, title string, content string, n
 }
 
 func (s Service) ListPosts(ctx context.Context) ([]svcmodel.Post, error) {
-	panic("Not Implemented")
+	posts, err := s.repository.ListPosts(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
-func (s Service) GetPost(ctx context.Context, newsletterId string) (*svcmodel.Post, error) {
-	panic("Not Implemented")
+func (s Service) GetPost(ctx context.Context, postId string) (*svcmodel.Post, error) {
+	post, err := s.repository.ReadPost(ctx, postId)
+
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
 }
-func (s Service) UpdatePost(ctx context.Context, newsletter svcmodel.Post) (*svcmodel.Post, error) {
-	panic("Not Implemented")
+func (s Service) UpdatePost(ctx context.Context, post svcmodel.Post, userId string) (*svcmodel.Post, error) {
+	updatedPost, err := s.repository.UpdatePost(ctx, post, userId)
+	if err != nil {
+		return nil, err
+	}
+	return updatedPost, err
 }
-func (s Service) DeletePost(ctx context.Context, newsletter svcmodel.Post) error {
-	panic("Not Implemented")
+func (s Service) DeletePost(ctx context.Context, post svcmodel.Post, userId string) (string, error) {
+	deleted, err := s.repository.DeletePost(ctx, post, userId)
+	if err != nil {
+		return deleted, err
+	}
+	return deleted, err
 }
