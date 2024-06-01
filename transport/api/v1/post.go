@@ -151,6 +151,7 @@ func (h *Handler) PublishPost(w http.ResponseWriter, r *http.Request) {
 		} else {
 			util.WriteErrResponse(w, http.StatusInternalServerError, err)
 		}
+		return
 	}
 	util.WriteResponse(w, http.StatusOK, post)
 }

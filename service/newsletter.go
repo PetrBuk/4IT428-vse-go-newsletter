@@ -25,7 +25,7 @@ func (s Service) ListNewsletters(ctx context.Context) ([]model.Newsletter, error
 	return newsletters, nil
 }
 
-// GetNewsletter returns an newsletter with specified newsletterID.
+// GetNewsletter returns a newsletter with specified newsletterID.
 func (s Service) GetNewsletter(ctx context.Context, newsletterID id.Newsletter) (*model.Newsletter, error) {
 	newsletter, err := s.repository.ReadNewsletter(ctx, newsletterID)
 

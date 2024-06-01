@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	types "github.com/supabase-community/gotrue-go/types"
+	"github.com/supabase-community/gotrue-go/types"
 )
 
 func (s Service) Login(ctx context.Context, email string, password string) (*types.TokenResponse, error) {

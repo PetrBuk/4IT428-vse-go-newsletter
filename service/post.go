@@ -45,6 +45,8 @@ func (s Service) DeletePost(ctx context.Context, postId string, userId string) (
 }
 
 func (s Service) PublishPost(ctx context.Context, postId string, userId string) (*svcmodel.Post, error) {
+	//TODO find subscribers, send emails
+
 	updatedPost, err := s.repository.PublishPost(ctx, postId, userId)
 	if err != nil {
 		return nil, err

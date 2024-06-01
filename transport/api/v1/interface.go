@@ -2,10 +2,9 @@ package v1
 
 import (
 	"context"
+	"github.com/supabase-community/gotrue-go/types"
 	"vse-go-newsletter-api/pkg/id"
 	svcmodel "vse-go-newsletter-api/service/model"
-
-	types "github.com/supabase-community/gotrue-go/types"
 )
 
 type RouteService interface {
