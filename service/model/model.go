@@ -22,4 +22,5 @@ type Post struct {
 	Title        string
 	Content      string
 	NewsletterId id.Newsletter
+	IsPublished  bool
 }

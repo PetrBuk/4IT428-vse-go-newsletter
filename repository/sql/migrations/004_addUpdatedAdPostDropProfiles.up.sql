@@ -1,5 +1,7 @@
 ALTER TABLE posts
-    ADD COLUMN updated_at     TIMESTAMPTZ   NOT NULL DEFAULT NOW();
+    ADD COLUMN updated_at     TIMESTAMPTZ   NOT NULL DEFAULT cast(NOW(),
+    ADD COLUMN is_published BOOLEAN NOT NULL DEFAULT FALSE;
+
 
 -- Drop policies set up for the profiles table
 DROP POLICY "Users can update own profile." ON profiles;

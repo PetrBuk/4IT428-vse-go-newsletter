@@ -13,4 +13,5 @@ type Post struct {
 	Content      string        `db:"content"`
 	NewsletterId id.Newsletter `db:"newsletter_id"`
 	UpdatedAt    time.Time     `db:"updated_at"`
+	IsPublished  bool          `db:"is_published"`
 }

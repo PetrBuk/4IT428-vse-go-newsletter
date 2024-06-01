@@ -1,5 +1,6 @@
 ALTER TABLE posts
-DROP COLUMN IF EXISTS updated_at ;
+DROP COLUMN IF EXISTS updated_at,
+DROP COLUMN IF EXISTS is_published;
 
 
 - Create a table for public profiles
