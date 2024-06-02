@@ -31,4 +31,10 @@ var (
 	CreatePost string
 	//go:embed scripts/post/Publish.sql
 	PublishPost string
+
+	// Subscription commands
+	//go:embed scripts/subscription/Create.sql
+	SubscribeNewsletter string
+	//go:embed scripts/subscription/Delete.sql
+	UnsubscribeNewsletter string
 )
