@@ -27,4 +27,7 @@ type RouteService interface {
 	UpdatePost(ctx context.Context, post svcmodel.Post, userId string) (*svcmodel.Post, error)
 	DeletePost(ctx context.Context, postId string, userId string) (string, error)
 	PublishPost(ctx context.Context, postId string, userId string) (*svcmodel.Post, error)
+	//Subscriptions handlers
+	SubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (*svcmodel.Subscription, error)
+	UnsubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error)
 }
