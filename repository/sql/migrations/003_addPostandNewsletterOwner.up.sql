@@ -18,5 +18,5 @@ content        TEXT          NOT NULL,
 newsletter_id  uuid          NOT NULL,
 CONSTRAINT fk_newsletter
 FOREIGN KEY (newsletter_id)
-REFERENCES newsletters (id)
+REFERENCES newsletters (id) ON DELETE CASCADE;
 );

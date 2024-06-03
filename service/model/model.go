@@ -16,8 +16,11 @@ type Newsletter struct {
 }
 
 type Post struct {
-	ID       string
-	createAt time.Time
-	Title    string
-	Content  string
+	ID           string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Title        string
+	Content      string
+	NewsletterId id.Newsletter
+	IsPublished  bool
 }

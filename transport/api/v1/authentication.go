@@ -6,7 +6,7 @@ import (
 	"vse-go-newsletter-api/transport/api/v1/model"
 	"vse-go-newsletter-api/transport/util"
 
-	types "github.com/supabase-community/gotrue-go/types"
+	"github.com/supabase-community/gotrue-go/types"
 )
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {

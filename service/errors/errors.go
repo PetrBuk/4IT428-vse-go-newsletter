@@ -3,6 +3,9 @@ package errors
 import "errors"
 
 var (
-	ErrNewsletterAlreadyExists = errors.New("newsletter already exists")
-	ErrNewsletterDoesntExists  = errors.New("newsletter does not exist")
+	ErrForbidden = errors.New("You do not have permission to perform this action")
+	ErrUnauthorized = errors.New("You are not authorized to perform this action")
+	ErrInternalServerError = errors.New("Internal server error")
+	ErrBadRequest = errors.New("Bad request")
+	ErrNotFound = errors.New("Not found")
 )
