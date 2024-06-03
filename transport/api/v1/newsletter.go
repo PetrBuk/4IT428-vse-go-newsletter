@@ -4,18 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"vse-go-newsletter-api/pkg/id"
 	"vse-go-newsletter-api/service/model"
-	model2 "vse-go-newsletter-api/transport/api/v1/model"
+	transportModel "vse-go-newsletter-api/transport/api/v1/model"
 	"vse-go-newsletter-api/transport/util"
 
 	"github.com/go-chi/chi"
 )
 
 func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
-	var newsletter model2.NewsLetter
+	var newsletter transportModel.NewsLetter
 
 	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -30,8 +29,8 @@ func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, userId, isUserIdOk := getUserId(w, r)
-	if isUserIdOk {
+	ctx, userId, isUnauthenticated := getUserId(w, r)
+	if isUnauthenticated {
 		return
 	}
 
@@ -60,7 +59,6 @@ func (h *Handler) GetNewsletter(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListNewsletters(w http.ResponseWriter, r *http.Request) {
-	slog.Info("getting list newsletters")
 	newsletters, err := h.service.ListNewsletters(r.Context())
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
@@ -73,15 +71,15 @@ func (h *Handler) ListNewsletters(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 	newsletterID := getNewsletterId(w, r)
 
-	var newsletter model2.NewsLetter
+	var newsletter transportModel.NewsLetter
 
 	if err := json.NewDecoder(r.Body).Decode(&newsletter); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	ctx, userId, isUserIdOk := getUserId(w, r)
-	if isUserIdOk {
+	ctx, userId, isUnauthenticated := getUserId(w, r)
+	if isUnauthenticated {
 		return
 	}
 
@@ -100,8 +98,8 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
 	newsletterID := getNewsletterId(w, r)
 
-	ctx, userId, isUserIdOk := getUserId(w, r)
-	if isUserIdOk {
+	ctx, userId, isUnauthenticated := getUserId(w, r)
+	if isUnauthenticated {
 		return
 	}
 

@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-chi/chi"
-	"github.com/jackc/pgx/v5"
-	"log/slog"
 	"net/http"
 	"vse-go-newsletter-api/service/model"
 	model2 "vse-go-newsletter-api/transport/api/v1/model"
 	"vse-go-newsletter-api/transport/util"
+
+	"github.com/go-chi/chi"
+	"github.com/jackc/pgx/v5"
 )
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
@@ -30,8 +30,8 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, userId, isUserIdNotOk := getUserId(w, r)
-	if isUserIdNotOk {
+	ctx, userId, isUnauthenticated := getUserId(w, r)
+	if isUnauthenticated {
 		return
 	}
 
@@ -60,7 +60,6 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListPosts(w http.ResponseWriter, r *http.Request) {
-	slog.Info("getting list posts")
 	posts, err := h.service.ListPosts(r.Context())
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
@@ -80,8 +79,8 @@ func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	if isPostIdNotOk {
 		return
 	}
-	ctx, userId, isUserIdNotOk := getUserId(w, r)
-	if isUserIdNotOk {
+	ctx, userId, isUnauthenticated := getUserId(w, r)
+	if isUnauthenticated {
 		return
 	}
 
@@ -116,8 +115,8 @@ func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, userId, isUserIdNotOk := getUserId(w, r)
-	if isUserIdNotOk {
+	ctx, userId, isUnauthenticated := getUserId(w, r)
+	if isUnauthenticated {
 		return
 	}
 
@@ -139,8 +138,8 @@ func (h *Handler) PublishPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, userId, isUserIdNotOk := getUserId(w, r)
-	if isUserIdNotOk {
+	ctx, userId, isUnauthenticated := getUserId(w, r)
+	if isUnauthenticated {
 		return
 	}
 
