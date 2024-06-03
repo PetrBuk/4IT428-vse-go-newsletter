@@ -24,3 +24,10 @@ type Post struct {
 	NewsletterId id.Newsletter
 	IsPublished  bool
 }
+
+type Subscription struct {
+	ID           string
+	CreatedAt    time.Time
+	UserId       string
+	NewsletterId id.Newsletter
+}

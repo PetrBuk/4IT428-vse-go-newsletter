@@ -151,3 +151,50 @@ func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterI
 	message := fmt.Sprintf("newsletter deleted successfully! ID: %s", newsletterId)
 	return message, nil
 }
+
+
+func (r *NewsletterRepository) SubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (*model.Subscription, error) {
+	var subscription dbmodel.Subscription
+
+	err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&subscription,
+		query.SubscribeNewsletter,
+		pgx.NamedArgs{
+			"newsletter_id": newsletterId,
+			"user_id":       userId,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	serviceSubscription := &model.Subscription{
+		ID:           subscription.ID,
+		UserId:       subscription.UserId,
+		NewsletterId: subscription.NewsletterId,
+		CreatedAt:    subscription.CreatedAt,
+	}
+
+	return serviceSubscription, nil
+}
+
+func (r *NewsletterRepository) UnsubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error) {
+	result, err := r.pool.Exec(ctx, query.UnsubscribeNewsletter, pgx.NamedArgs{
+		"newsletter_id": newsletterId,
+		"user_id":       userId,
+	})
+
+	if err != nil {
+		message := fmt.Sprintf("failed to cancel subscription to newsletter ID: %s", newsletterId)
+		return message, err
+	}
+
+	if result.RowsAffected() == 0 {
+		message := fmt.Sprintf("You are not subscribed to the newsletter ID: %s. There was no need to unsubscribe", newsletterId)
+		return message, fmt.Errorf("no rows affected")
+	}
+	message := fmt.Sprintf("Successful newsletter unsubscription (ID: %s)", newsletterId)
+	return message, nil
+}
