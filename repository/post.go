@@ -53,6 +53,30 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post, userId
 	return newPost, nil
 }
 
+func (r *PostRepository) ReadPost(ctx context.Context, postId string) (*model.Post, error) {
+	var post dbmodel.Post
+	if err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&post,
+		query.ReadPost,
+		pgx.NamedArgs{
+			"id": postId,
+		},
+	); err != nil {
+		return nil, err
+	}
+	return &model.Post{
+		ID:           post.ID,
+		Title:        post.Title,
+		Content:      post.Content,
+		NewsletterId: post.NewsletterId,
+		CreatedAt:    post.CreatedAt,
+		UpdatedAt:    post.UpdatedAt,
+		IsPublished:  post.IsPublished,
+	}, nil
+}
+
 func (r *PostRepository) ListPosts(ctx context.Context) ([]model.Post, error) {
 	var posts []dbmodel.Post
 	if err := pgxscan.Select(
@@ -76,31 +100,6 @@ func (r *PostRepository) ListPosts(ctx context.Context) ([]model.Post, error) {
 		}
 	}
 	return response, nil
-}
-
-func (r *PostRepository) ReadPost(ctx context.Context, postId string) (*model.Post, error) {
-	var post dbmodel.Post
-	if err := pgxscan.Get(
-		ctx,
-		r.pool,
-		&post,
-		query.ReadPost,
-		pgx.NamedArgs{
-			"id": postId,
-		},
-	); err != nil {
-		return nil, err
-	}
-	return &model.Post{
-		ID:           post.ID,
-		Title:        post.Title,
-		Content:      post.Content,
-		NewsletterId: post.NewsletterId,
-		CreatedAt:    post.CreatedAt,
-		UpdatedAt:    post.UpdatedAt,
-		IsPublished:  post.IsPublished,
-	}, nil
-
 }
 
 func (r *PostRepository) UpdatePost(ctx context.Context, post model.Post, userId string) (*model.Post, error) {

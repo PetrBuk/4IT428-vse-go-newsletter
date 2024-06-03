@@ -24,6 +24,36 @@ func NewNewsletterRepository(pool *pgxpool.Pool) *NewsletterRepository {
 	}
 }
 
+func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
+	var createdNewsletter dbmodel.Newsletter
+
+	err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&createdNewsletter,
+		query.CreateNewsletter,
+		pgx.NamedArgs{
+			"name": 				newsletter.Name,
+			"description":	newsletter.Description,
+			"owner_id":			newsletter.OwnerId,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create newsletter: %w", err)
+	}
+
+	newNewsletter := &model.Newsletter{
+		ID:          createdNewsletter.ID,
+		Name:        createdNewsletter.Name,
+		Description: createdNewsletter.Description,
+		OwnerId:     createdNewsletter.OwnerId,
+		CreateAt:    createdNewsletter.CreatedAt,
+		UpdatedAt:   createdNewsletter.UpdatedAt,
+	}
+
+	return newNewsletter, nil
+}
+
 func (r *NewsletterRepository) ReadNewsletter(ctx context.Context, newsletterID id.Newsletter) (*model.Newsletter, error) {
 	var newsletter dbmodel.Newsletter
 	if err := pgxscan.Get(
@@ -99,54 +129,25 @@ func (r *NewsletterRepository) UpdateNewsletter(ctx context.Context, newsletter 
 	return updatedNewsletter, nil
 }
 
-func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) (string, error) {
+func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error) {
 	result, err := r.pool.Exec(
 		ctx,
 		query.DeleteNewsletter,
-		pgx.NamedArgs{"id": newsletter.ID,
-			"owner_id": newsletter.OwnerId,
+		pgx.NamedArgs{
+			"id": 			newsletterId,
+			"owner_id": userId,
 		},
 	)
 
 	if err != nil {
-		message := fmt.Sprintf("newsletter not deleted! ID: %s", newsletter.ID)
+		message := fmt.Sprintf("newsletter not deleted! ID: %s", newsletterId)
 		return message, err
 	}
 
 	if result.RowsAffected() == 0 {
-		message := fmt.Sprintf("no newsletter found to delete or you are not allowed to delete it. ID: %s", newsletter.ID)
+		message := fmt.Sprintf("You are not allowed to delete it. ID: %s", newsletterId)
 		return message, fmt.Errorf("no rows affected")
 	}
-	message := fmt.Sprintf("newsletter deleted successfully! ID: %s", newsletter.ID)
+	message := fmt.Sprintf("newsletter deleted successfully! ID: %s", newsletterId)
 	return message, nil
-}
-
-func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
-	var createdNewsletter dbmodel.Newsletter
-
-	err := pgxscan.Get(
-		ctx,
-		r.pool,
-		&createdNewsletter,
-		query.CreateNewsletter,
-		pgx.NamedArgs{
-			"name": 				newsletter.Name,
-			"description":	newsletter.Description,
-			"owner_id":			newsletter.OwnerId,
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create newsletter: %w", err)
-	}
-
-	newNewsletter := &model.Newsletter{
-		ID:          createdNewsletter.ID,
-		Name:        createdNewsletter.Name,
-		Description: createdNewsletter.Description,
-		OwnerId:     createdNewsletter.OwnerId,
-		CreateAt:    createdNewsletter.CreatedAt,
-		UpdatedAt:   createdNewsletter.UpdatedAt,
-	}
-
-	return newNewsletter, nil
 }

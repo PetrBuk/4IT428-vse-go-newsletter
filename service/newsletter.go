@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"vse-go-newsletter-api/pkg/id"
+	"vse-go-newsletter-api/service/errors"
 	"vse-go-newsletter-api/service/model"
 )
 
@@ -36,19 +37,43 @@ func (s Service) GetNewsletter(ctx context.Context, newsletterID id.Newsletter) 
 }
 
 // UpdateNewsletter updates attributes of a specified newsletter.
-func (s Service) UpdateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error) {
-	updatedNewsletter, err := s.repository.UpdateNewsletter(ctx, newsletter)
+func (s Service) UpdateNewsletter(ctx context.Context, data model.Newsletter, userId string) (*model.Newsletter, error) {
+	newsletter, err := s.repository.ReadNewsletter(ctx, data.ID)
+
+	if err != nil {
+		return nil, errors.ErrNotFound
+	}
+
+	if newsletter.OwnerId != userId {
+		return nil, errors.ErrForbidden
+	}
+
+	updatedNewsletter, err := s.repository.UpdateNewsletter(ctx, data)
+
 	if err != nil {
 		return nil, err
 	}
-	return updatedNewsletter, err
+
+	return updatedNewsletter, nil
 }
 
 // DeleteNewsletter deletes newsletter from memory.
-func (s Service) DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) (string, error) {
-	deleted, err := s.repository.DeleteNewsletter(ctx, newsletter)
+func (s Service) DeleteNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error) {
+	newsletter, err := s.repository.ReadNewsletter(ctx, newsletterId)
+
 	if err != nil {
-		return deleted, err
+		return "", errors.ErrNotFound
 	}
-	return deleted, err
+
+	if newsletter.OwnerId != userId {
+		return "", errors.ErrForbidden
+	}
+
+	deleted, err := s.repository.DeleteNewsletter(ctx, newsletterId, userId)
+
+	if err != nil {
+		return deleted, errors.ErrBadRequest
+	}
+
+	return deleted, nil
 }

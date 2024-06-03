@@ -104,9 +104,8 @@ func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	message := fmt.Sprintf("post updated successfully! ID: %s, Title: %s, Content: %s, NewsletterId: %s, CreatedAt: %s, UpdatedAt: %s, IsPublished: %v",
-		updated.ID, updated.Title, updated.Content, updated.NewsletterId, updated.CreatedAt, updated.UpdatedAt, updated.IsPublished)
-	util.WriteResponse(w, http.StatusOK, message)
+
+	util.WriteResponse(w, http.StatusOK, updated)
 }
 
 func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {

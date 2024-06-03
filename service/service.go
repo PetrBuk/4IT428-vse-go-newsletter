@@ -13,7 +13,7 @@ type Repository interface {
 	ReadNewsletter(ctx context.Context, newsletterID id.Newsletter) (*model.Newsletter, error)
 	ListNewsletter(ctx context.Context) ([]model.Newsletter, error)
 	UpdateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error)
-	DeleteNewsletter(ctx context.Context, newsletter model.Newsletter) (string, error)
+	DeleteNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error)
 	CreateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error)
 	CreatePost(ctx context.Context, post model.Post, userId string) (*model.Post, error)
 	ListPosts(ctx context.Context) ([]model.Post, error)

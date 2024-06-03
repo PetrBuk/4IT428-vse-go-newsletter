@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"vse-go-newsletter-api/pkg/id"
+	"vse-go-newsletter-api/service/errors"
 	"vse-go-newsletter-api/service/model"
 	transportModel "vse-go-newsletter-api/transport/api/v1/model"
 	"vse-go-newsletter-api/transport/util"
@@ -41,9 +42,8 @@ func (h *Handler) CreateNewsletter(w http.ResponseWriter, r *http.Request) {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
 		return
 	}
-	message := fmt.Sprintf("Newsletter created successfully!  ID: %s, Name: %s,  Description: %s,  OwnerId: %s,  CretedAt: %s\",  UpdatedAt: %s",
-		created.ID, created.Name, created.Description, created.OwnerId, created.CreateAt, created.UpdatedAt)
-	util.WriteResponse(w, http.StatusOK, message)
+
+	util.WriteResponse(w, http.StatusCreated, created)
 }
 
 func (h *Handler) GetNewsletter(w http.ResponseWriter, r *http.Request) {
@@ -85,14 +85,14 @@ func (h *Handler) UpdateNewsletter(w http.ResponseWriter, r *http.Request) {
 
 	var serviceNewsletter = model.Newsletter{ID: newsletterID, Name: newsletter.Name, Description: newsletter.Description, OwnerId: userId}
 
-	updated, err := h.service.UpdateNewsletter(ctx, serviceNewsletter)
+	updated, err := h.service.UpdateNewsletter(ctx, serviceNewsletter, userId)
+
 	if err != nil {
 		util.WriteErrResponse(w, http.StatusInternalServerError, err)
 		return
 	}
-	message := fmt.Sprintf("newsletter updated successfully!  ID: %s,  Name: %s, Description: %s, OwnerId: %s,  UpdatedAt: %s",
-		updated.ID, updated.Name, updated.Description, updated.OwnerId, updated.UpdatedAt)
-	util.WriteResponse(w, http.StatusOK, message)
+
+	util.WriteResponse(w, http.StatusOK, updated)
 }
 
 func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
@@ -103,14 +103,22 @@ func (h *Handler) DeleteNewsletter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var serviceNewsletter = model.Newsletter{ID: newsletterID, OwnerId: userId}
+	deleted, err := h.service.DeleteNewsletter(ctx, newsletterID, userId)
 
-	deleted, err := h.service.DeleteNewsletter(ctx, serviceNewsletter)
 	if err != nil {
-		util.WriteErrResponse(w, http.StatusInternalServerError, err)
-		return
+		if err.Error() == errors.ErrNotFound.Error() {
+			util.WriteErrResponse(w, http.StatusNotFound, err)
+			return
+		} else if err.Error() == errors.ErrForbidden.Error() {
+			util.WriteErrResponse(w, http.StatusForbidden, err)
+			return
+		} else {
+			util.WriteErrResponse(w, http.StatusInternalServerError, err)
+			return
+		}
 	}
-	util.WriteResponse(w, http.StatusOK, deleted)
+
+	util.WriteResponse(w, http.StatusNoContent, deleted)
 }
 
 func getUserId(w http.ResponseWriter, r *http.Request) (context.Context, string, bool) {
