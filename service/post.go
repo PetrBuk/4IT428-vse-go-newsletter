@@ -60,7 +60,7 @@ func (s Service) PublishPost(ctx context.Context, postId string, userId string) 
 			return nil, errors.New(fmt.Sprintf("There are no subscribers for newsletter with id: %s", post.NewsletterId.String()))
 		}
 		if err == nil {
-			err := mail.SendMail(subscribers, post.Content)
+			err := mail.SendNewPostMail(subscribers, post)
 			if err == nil {
 				updatedPost, err := s.repository.PublishPost(ctx, postId, userId)
 				if err != nil {
