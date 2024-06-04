@@ -1,0 +1,2 @@
+ALTER TABLE subscriptions
+    ADD COLUMN is_confirmed BOOLEAN NOT NULL DEFAULT FALSE;

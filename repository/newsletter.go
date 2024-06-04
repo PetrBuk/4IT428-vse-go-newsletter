@@ -174,6 +174,7 @@ func (r *NewsletterRepository) SubscribeNewsletter(ctx context.Context, newslett
 		UserId:       subscription.UserId,
 		NewsletterId: subscription.NewsletterId,
 		CreatedAt:    subscription.CreatedAt,
+		IsConfirmed:  subscription.IsConfirmed,
 	}
 
 	return serviceSubscription, nil
@@ -219,4 +220,32 @@ func (r *NewsletterRepository) GetSubscribers(ctx context.Context, newsletter id
 		return nil, err
 	}
 	return response, nil
+}
+
+func (r *NewsletterRepository) ConfirmSubscription(ctx context.Context, newsletterId id.Newsletter, userId string) (*model.Subscription, error) {
+	var subscription dbmodel.Subscription
+
+	err := pgxscan.Get(
+		ctx,
+		r.pool,
+		&subscription,
+		query.ConfirmSubscription,
+		pgx.NamedArgs{
+			"newsletter_id": newsletterId,
+			"user_id":       userId,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	serviceSubscription := &model.Subscription{
+		ID:           subscription.ID,
+		UserId:       subscription.UserId,
+		NewsletterId: subscription.NewsletterId,
+		CreatedAt:    subscription.CreatedAt,
+		IsConfirmed:  subscription.IsConfirmed,
+	}
+
+	return serviceSubscription, nil
 }

@@ -10,4 +10,5 @@ type Subscription struct {
 	CreatedAt    time.Time     `db:"created_at"`
 	UserId       string        `db:"user_id"`
 	NewsletterId id.Newsletter `db:"newsletter_id"`
+	IsConfirmed  bool          `db:"is_confirmed"`
 }

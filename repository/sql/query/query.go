@@ -39,4 +39,6 @@ var (
 	UnsubscribeNewsletter string
 	//go:embed scripts/subscription/GetSubscribers.sql
 	GetSubscribers string
+	//go:embed scripts/subscription/Confirm.sql
+	ConfirmSubscription string
 )

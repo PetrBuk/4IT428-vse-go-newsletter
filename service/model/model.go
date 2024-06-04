@@ -30,4 +30,5 @@ type Subscription struct {
 	CreatedAt    time.Time
 	UserId       string
 	NewsletterId id.Newsletter
+	IsConfirmed  bool
 }

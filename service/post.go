@@ -51,10 +51,10 @@ func (s Service) PublishPost(ctx context.Context, postId string, userId string) 
 
 	post, err := s.repository.ReadPost(ctx, postId)
 
-	if post.IsPublished {
-		return post, errors.New(fmt.Sprintf("Post with id %s has already been published!", post.ID))
-	}
 	if err == nil {
+		if post.IsPublished {
+			return post, errors.New(fmt.Sprintf("Post with id %s has already been published!", post.ID))
+		}
 		subscribers, err := s.repository.GetSubscribers(ctx, post.NewsletterId)
 		if len(subscribers) == 0 {
 			return nil, errors.New(fmt.Sprintf("There are no subscribers for newsletter with id: %s", post.NewsletterId.String()))

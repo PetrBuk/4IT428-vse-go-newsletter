@@ -46,6 +46,7 @@ func (h *Handler) initRouter() {
 		r.With(authenticate).Delete("/{id}", h.DeleteNewsletter)
 		r.With(authenticate).Post("/{id}/subscribe", h.SubscribeNewsletter)
 		r.With(authenticate).Delete("/{id}/unsubscribe", h.UnsubscribeNewsletter)
+		r.With(authenticate).Put("/{id}/confirm", h.ConfirmSubscription)
 	})
 
 	r.Route("/posts", func(r chi.Router) {

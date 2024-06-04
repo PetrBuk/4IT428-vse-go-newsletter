@@ -21,3 +21,11 @@ func (s Service) UnsubscribeNewsletter(ctx context.Context, newsletterId id.News
 	}
 	return subscription, err
 }
+
+func (s Service) ConfirmSubscription(ctx context.Context, newsletterId id.Newsletter, userId string) (*svcmodel.Subscription, error) {
+	subscription, err := s.repository.ConfirmSubscription(ctx, newsletterId, userId)
+	if err != nil {
+		return nil, err
+	}
+	return subscription, err
+}
