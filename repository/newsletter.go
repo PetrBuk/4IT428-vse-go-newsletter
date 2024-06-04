@@ -199,10 +199,8 @@ func (r *NewsletterRepository) UnsubscribeNewsletter(ctx context.Context, newsle
 	return message, nil
 }
 
-func (r *NewsletterRepository) GetSubscribers(ctx context.Context, newsletter id.Newsletter) ([]string, error) {
+func (r *NewsletterRepository) GetSubscribers(ctx context.Context, newsletterId id.Newsletter) ([]string, error) {
 	var subscribers []string
-	newsletterId := newsletter.String()
-
 	err := pgxscan.Select(
 		ctx,
 		r.pool,
