@@ -2,12 +2,13 @@ package mail
 
 import (
 	"net/smtp"
+	"os"
 )
 
 func SendMail(subscribers []string, content string) error {
 
-	from := "gonewsvse@gmail.com"
-	pw := "sfan xtcd snwv fkoc"
+	from := os.Getenv("EMAIL_ADDRESS")
+	pw := os.Getenv("EMAIL_PASSWORD")
 
 	smtpHost := "smtp.gmail.com"
 	smtpPort := "587"
