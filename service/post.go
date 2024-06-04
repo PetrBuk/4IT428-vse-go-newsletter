@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"vse-go-newsletter-api/service/mail"
 	svcmodel "vse-go-newsletter-api/service/model"
 )
 
@@ -45,11 +48,27 @@ func (s Service) DeletePost(ctx context.Context, postId string, userId string) (
 }
 
 func (s Service) PublishPost(ctx context.Context, postId string, userId string) (*svcmodel.Post, error) {
-	//TODO find subscribers, send emails
 
-	updatedPost, err := s.repository.PublishPost(ctx, postId, userId)
-	if err != nil {
-		return nil, err
+	post, err := s.repository.ReadPost(ctx, postId)
+
+	if post.IsPublished {
+		return post, errors.New(fmt.Sprintf("Post with id %s has already been published!", post.ID))
 	}
-	return updatedPost, err
+	if err == nil {
+		subscribers, err := s.repository.GetSubscribers(ctx, post.NewsletterId)
+		if len(subscribers) == 0 {
+			return nil, errors.New(fmt.Sprintf("There are no subscribers for newsletter with id: %s", post.NewsletterId.String()))
+		}
+		if err == nil {
+			err := mail.SendMail(subscribers, post.Content)
+			if err == nil {
+				updatedPost, err := s.repository.PublishPost(ctx, postId, userId)
+				if err != nil {
+					return nil, err
+				}
+				return updatedPost, err
+			}
+		}
+	}
+	return nil, err
 }

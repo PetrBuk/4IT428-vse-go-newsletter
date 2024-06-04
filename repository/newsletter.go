@@ -33,9 +33,9 @@ func (r *NewsletterRepository) CreateNewsletter(ctx context.Context, newsletter 
 		&createdNewsletter,
 		query.CreateNewsletter,
 		pgx.NamedArgs{
-			"name": 				newsletter.Name,
-			"description":	newsletter.Description,
-			"owner_id":			newsletter.OwnerId,
+			"name":        newsletter.Name,
+			"description": newsletter.Description,
+			"owner_id":    newsletter.OwnerId,
 		},
 	)
 	if err != nil {
@@ -134,7 +134,7 @@ func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterI
 		ctx,
 		query.DeleteNewsletter,
 		pgx.NamedArgs{
-			"id": 			newsletterId,
+			"id":       newsletterId,
 			"owner_id": userId,
 		},
 	)
@@ -151,7 +151,6 @@ func (r *NewsletterRepository) DeleteNewsletter(ctx context.Context, newsletterI
 	message := fmt.Sprintf("newsletter deleted successfully! ID: %s", newsletterId)
 	return message, nil
 }
-
 
 func (r *NewsletterRepository) SubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (*model.Subscription, error) {
 	var subscription dbmodel.Subscription
@@ -197,4 +196,27 @@ func (r *NewsletterRepository) UnsubscribeNewsletter(ctx context.Context, newsle
 	}
 	message := fmt.Sprintf("Successful newsletter unsubscription (ID: %s)", newsletterId)
 	return message, nil
+}
+
+func (r *NewsletterRepository) GetSubscribers(ctx context.Context, newsletter id.Newsletter) ([]string, error) {
+	var subscribers []string
+	newsletterId := newsletter.String()
+
+	err := pgxscan.Select(
+		ctx,
+		r.pool,
+		&subscribers,
+		query.GetSubscribers,
+		pgx.NamedArgs{
+			"newsletterId": newsletterId,
+		})
+	response := make([]string, len(subscribers))
+	for i, subscriber := range subscribers {
+		response[i] = subscriber
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
