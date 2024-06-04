@@ -14,6 +14,7 @@ func (s Service) SubscribeNewsletter(ctx context.Context, newsletterId id.Newsle
 	if err != nil {
 		return nil, err
 	}
+
 	return subscription, err
 }
 

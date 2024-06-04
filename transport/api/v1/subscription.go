@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/go-chi/chi"
+	"errors"
 	"net/http"
 	"vse-go-newsletter-api/service/model"
 	"vse-go-newsletter-api/transport/util"
@@ -11,8 +11,6 @@ func (h *Handler) SubscribeNewsletter(w http.ResponseWriter, r *http.Request) {
 	newsletterId := getNewsletterId(w, r)
 	email := getEmail(w, r)
 
-	//newsletterId := r.URL.Query().Get("id")
-	//email := r.URL.Query().Get("email")
 	if email != "" {
 		subscription, err := h.service.SubscribeNewsletter(r.Context(), newsletterId, email)
 		if err != nil {
@@ -54,6 +52,12 @@ func (h *Handler) ConfirmSubscription(w http.ResponseWriter, r *http.Request) {
 }
 
 func getEmail(w http.ResponseWriter, r *http.Request) string {
-	var email string = chi.URLParam(r, "email")
+	var email string = r.URL.Query().Get("email")
+
+	if email == "" {
+		util.WriteErrResponse(w, http.StatusBadRequest, errors.New("email is required"))
+		return ""
+	}
+
 	return email
 }
