@@ -28,6 +28,7 @@ type Post struct {
 type Subscription struct {
 	ID           string
 	CreatedAt    time.Time
-	UserId       string
+	Email        string
 	NewsletterId id.Newsletter
+	IsConfirmed  bool
 }

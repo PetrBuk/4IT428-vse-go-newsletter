@@ -8,6 +8,7 @@ import (
 type Subscription struct {
 	ID           string        `db:"id"`
 	CreatedAt    time.Time     `db:"created_at"`
-	UserId       string        `db:"user_id"`
+	Email        string        `db:"email"`
 	NewsletterId id.Newsletter `db:"newsletter_id"`
+	IsConfirmed  bool          `db:"is_confirmed"`
 }

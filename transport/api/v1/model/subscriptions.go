@@ -4,6 +4,6 @@ import "vse-go-newsletter-api/pkg/id"
 
 type Subscription struct {
 	ID           string        `json:"id"`
-	UserId       string        `json:"userId" validate:"required"`
+	Email        string        `json:"email" validate:"required"`
 	NewsletterId id.Newsletter `json:"newsletterId" validate:"required"`
 }

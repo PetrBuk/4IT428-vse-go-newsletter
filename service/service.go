@@ -23,6 +23,8 @@ type Repository interface {
 	PublishPost(ctx context.Context, postId string, userId string) (*model.Post, error)
 	SubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (*model.Subscription, error)
 	UnsubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error)
+	GetSubscribers(ctx context.Context, newsletter id.Newsletter) ([]string, error)
+	ConfirmSubscription(ctx context.Context, newsletterId id.Newsletter, userId string) (*model.Subscription, error)
 }
 
 type Service struct {

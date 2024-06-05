@@ -31,4 +31,5 @@ type RouteService interface {
 	//Subscriptions handlers
 	SubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (*svcmodel.Subscription, error)
 	UnsubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error)
+	ConfirmSubscription(ctx context.Context, newsletterId id.Newsletter, userId string) (*svcmodel.Subscription, error)
 }

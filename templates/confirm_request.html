@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Confirm Your Subscription</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+			margin: 0;
+			padding: 20px;
+		}
+
+		.container {
+			max-width: 600px;
+			margin: 0 auto;
+			background-color: #ffffff;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.header {
+			text-align: center;
+			padding-bottom: 20px;
+		}
+
+		.header h1 {
+			color: #333333;
+		}
+
+		.content {
+			text-align: center;
+		}
+
+		.content p {
+			color: #555555;
+		}
+
+		.button {
+			display: inline-block;
+			padding: 10px 20px;
+			margin-top: 20px;
+			color: #ffffff;
+			background-color: #007BFF;
+			text-decoration: none;
+			border-radius: 5px;
+		}
+
+		.unsubscribe {
+			margin-top: 20px;
+			text-align: center;
+		}
+
+		.unsubscribe a {
+			color: #888888;
+			text-decoration: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+			<h1>Confirm Your Subscription</h1>
+		</div>
+		<div class="content">
+			<p>Hello,</p>
+			<p>You have requested to subscribe to our newsletter.</p>
+			<p>Please confirm your subscription by clicking the button below:</p>
+			<a href="{{.ConfirmLink}}" class="button">Confirm Subscription</a>
+			<p>If you did not request this subscription, please ignore this email or unsubscribe.</p>
+		</div>
+		<div class="unsubscribe">
+			<p><a href="{{.UnsubscribeLink}}">Unsubscribe</a></p>
+		</div>
+	</div>
+</body>
+
+</html>

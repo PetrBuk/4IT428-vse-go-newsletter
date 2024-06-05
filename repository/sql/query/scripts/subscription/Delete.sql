@@ -1,3 +1,3 @@
 DELETE FROM subscriptions
-WHERE user_id = @user_id
+WHERE email = @email
 AND newsletter_id = @newsletter_id;
