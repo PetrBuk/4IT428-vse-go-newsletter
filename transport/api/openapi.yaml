@@ -5,17 +5,8 @@ info:
   description: |
     Our newsletter app helps you create, manage, and send newsletters effortlessly. Stay connected with your audience and track performance with ease.
 
-    ### Check out its awesome features:
-
-    * Login and register
-    * Create a newsletter
-    * Subscribe / unsubscribe to the newsletter
-    * Confirm subscription
-    * Create / update or delete newsletter
-    * Create / update / publish or delete post
-
 servers:
-  - url: http://localhost #TODO Server
+  - url: http://localhost:8080
     description: Localhost server running on HTTP.
 
 paths:
@@ -106,6 +97,13 @@ paths:
           description: Invalid request
 
   "/newsletters/{id}":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
     get:
       description: Get a specific newsletter
       operationId: GetNewsletter
@@ -137,6 +135,19 @@ paths:
           description: Invalid request
 
   "/newsletters/{id}/subscribe":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: email to be unsibscribed
     get:
       description: Subscribe to a newsletter
       operationId: SubscribeNewsletter
@@ -148,6 +159,19 @@ paths:
           description: Invalid request
 
   "/newsletters/{id}/unsubscribe":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: email to be unsibscribed
     get:
       description: Unsubscribe from a newsletter
       operationId: UnsubscribeNewsletter
@@ -159,6 +183,19 @@ paths:
           description: Invalid request
 
   "/newsletters/{id}/confirm":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: email to be unsibscribed
     get:
       description: Confirm subscription to a newsletter
       operationId: ConfirmSubscription
@@ -191,6 +228,13 @@ paths:
           description: Invalid request
 
   "/posts/{id}":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the post
     get:
       description: Get a specific post
       operationId: GetPost
@@ -222,6 +266,13 @@ paths:
           description: Invalid request
 
   "/posts/{id}/publish":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the post
     put:
       description: Publish a post
       operationId: PublishPost
