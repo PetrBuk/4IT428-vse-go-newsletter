@@ -1,10 +1,12 @@
 openapi: 3.1.0
 info:
-  title: vse-go-newsletter-api
-  description: Newsletter service allowing to send posts to subscribers.
-  version: 0.0.0
+  title: VŠE Newsletter
+  version: '1.0.0'
+  description: |
+    Our newsletter app helps you create, manage, and send newsletters effortlessly. Stay connected with your audience and track performance with ease.
+
 servers:
-  - url: http://localhost
+  - url: http://localhost:8080
     description: Localhost server running on HTTP.
 
 paths:
@@ -18,7 +20,266 @@ paths:
           description: It's ALIVE (a.k.a. service is up and running)
         "400":
           description: Invalid request
-  "/newsletters": {
-    # TODO;
-  }
+
+  "/auth/login":
+    post:
+      description: User login
+      operationId: Login
+      summary: User login
+      responses:
+        "204":
+          description: Login successful
+        "400":
+          description: Invalid request
+  "/auth/register":
+    post:
+      description: User registration
+      operationId: Register
+      summary: User registration
+      responses:
+        "204":
+          description: Registration successful
+        "400":
+          description: Invalid request
+
+  "/auth/verify":
+    post:
+      description: Verify user
+      operationId: VerifyUser
+      summary: Verify user
+      responses:
+        "204":
+          description: Verification successful
+        "400":
+          description: Invalid request
+
+  "/auth/refresh":
+    post:
+      description: Refresh authentication token
+      operationId: RefreshToken
+      summary: Refresh authentication token
+      responses:
+        "204":
+          description: Token refreshed successfully
+        "400":
+          description: Invalid request
+
+  "/auth/change-password":
+    post:
+      description: Change user password
+      operationId: ChangePassword
+      summary: Change user password
+      responses:
+        "204":
+          description: Password changed successfully
+        "400":
+          description: Invalid request
+
+  "/newsletters":
+    get:
+      description: Get list of newsletters
+      operationId: ListNewsletters
+      summary: List newsletters
+      responses:
+        "204":
+          description: Newsletters retrieved successfully
+        "400":
+          description: Invalid request
+
+    post:
+      description: Create a new newsletter
+      operationId: CreateNewsletter
+      summary: Create newsletter
+      responses:
+        "204":
+          description: Newsletter created successfully
+        "400":
+          description: Invalid request
+
+  "/newsletters/{id}":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
+    get:
+      description: Get a specific newsletter
+      operationId: GetNewsletter
+      summary: Get newsletter
+      responses:
+        "204":
+          description: Newsletter retrieved successfully
+        "400":
+          description: Invalid request
+
+    put:
+      description: Update a newsletter
+      operationId: UpdateNewsletter
+      summary: Update newsletter
+      responses:
+        "204":
+          description: Newsletter updated successfully
+        "400":
+          description: Invalid request
+
+    delete:
+      description: Delete a newsletter
+      operationId: DeleteNewsletter
+      summary: Delete newsletter
+      responses:
+        "204":
+          description: Newsletter deleted successfully
+        "400":
+          description: Invalid request
+
+  "/newsletters/{id}/subscribe":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: email to be unsibscribed
+    get:
+      description: Subscribe to a newsletter
+      operationId: SubscribeNewsletter
+      summary: Subscribe newsletter
+      responses:
+        "204":
+          description: Subscribed to newsletter successfully
+        "400":
+          description: Invalid request
+
+  "/newsletters/{id}/unsubscribe":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: email to be unsibscribed
+    get:
+      description: Unsubscribe from a newsletter
+      operationId: UnsubscribeNewsletter
+      summary: Unsubscribe newsletter
+      responses:
+        "204":
+          description: Unsubscribed from newsletter successfully
+        "400":
+          description: Invalid request
+
+  "/newsletters/{id}/confirm":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the newsletter
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: email to be unsibscribed
+    get:
+      description: Confirm subscription to a newsletter
+      operationId: ConfirmSubscription
+      summary: Confirm subscription
+      responses:
+        "204":
+          description: Subscription confirmed successfully
+        "400":
+          description: Invalid request
+
+  "/posts":
+    get:
+      description: Get list of posts
+      operationId: ListPosts
+      summary: List posts
+      responses:
+        "204":
+          description: Posts retrieved successfully
+        "400":
+          description: Invalid request
+
+    post:
+      description: Create a new post
+      operationId: CreatePost
+      summary: Create post
+      responses:
+        "204":
+          description: Post created successfully
+        "400":
+          description: Invalid request
+
+  "/posts/{id}":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the post
+    get:
+      description: Get a specific post
+      operationId: GetPost
+      summary: Get post
+      responses:
+        "204":
+          description: Post retrieved successfully
+        "400":
+          description: Invalid request
+
+    put:
+      description: Update a post
+      operationId: UpdatePost
+      summary: Update post
+      responses:
+        "204":
+          description: Post updated successfully
+        "400":
+          description: Invalid request
+
+    delete:
+      description: Delete a post
+      operationId: DeletePost
+      summary: Delete post
+      responses:
+        "204":
+          description: Post deleted successfully
+        "400":
+          description: Invalid request
+
+  "/posts/{id}/publish":
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: UUID of the post
+    put:
+      description: Publish a post
+      operationId: PublishPost
+      summary: Publish post
+      responses:
+        "204":
+          description: Post published successfully
+        "400":
+          description: Invalid request
 components: {}

@@ -12,6 +12,19 @@ import (
 type Repository interface {
 	ReadNewsletter(ctx context.Context, newsletterID id.Newsletter) (*model.Newsletter, error)
 	ListNewsletter(ctx context.Context) ([]model.Newsletter, error)
+	UpdateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error)
+	DeleteNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error)
+	CreateNewsletter(ctx context.Context, newsletter model.Newsletter) (*model.Newsletter, error)
+	CreatePost(ctx context.Context, post model.Post, userId string) (*model.Post, error)
+	ListPosts(ctx context.Context) ([]model.Post, error)
+	ReadPost(ctx context.Context, postId string) (*model.Post, error)
+	UpdatePost(ctx context.Context, post model.Post, userId string) (*model.Post, error)
+	DeletePost(ctx context.Context, postId string, userId string) (string, error)
+	PublishPost(ctx context.Context, postId string, userId string) (*model.Post, error)
+	SubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (*model.Subscription, error)
+	UnsubscribeNewsletter(ctx context.Context, newsletterId id.Newsletter, userId string) (string, error)
+	GetSubscribers(ctx context.Context, newsletter id.Newsletter) ([]string, error)
+	ConfirmSubscription(ctx context.Context, newsletterId id.Newsletter, userId string) (*model.Subscription, error)
 }
 
 type Service struct {

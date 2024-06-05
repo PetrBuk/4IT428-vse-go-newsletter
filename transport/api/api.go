@@ -23,8 +23,8 @@ type Controller struct {
 	*chi.Mux
 
 	authenticator middleware.Authenticator
-	service apiv1.RouteService
-	version string
+	service       apiv1.RouteService
+	version       string
 }
 
 func NewController(
@@ -34,8 +34,8 @@ func NewController(
 ) (*Controller, error) {
 	controller := &Controller{
 		authenticator: authenticator,
-		service: 			 service,
-		version: 			 version,
+		service:       service,
+		version:       version,
 	}
 	controller.initRouter()
 	return controller, nil
@@ -72,10 +72,10 @@ func (c *Controller) initRouter() {
 func (c *Controller) OpenAPI(w http.ResponseWriter, _ *http.Request) {
 	encodeFn := func(w http.ResponseWriter, data any) error {
 		d, ok := data.([]byte)
-		if (!ok) {
+		if !ok {
 			return fmt.Errorf("expected byte slice: got %T", data)
 		}
-		if _,err := w.Write(d); err != nil {
+		if _, err := w.Write(d); err != nil {
 			return fmt.Errorf("writing openapi content: %w", err)
 		}
 

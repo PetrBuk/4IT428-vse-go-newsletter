@@ -47,3 +47,7 @@ func unmarshalUUID(u *uuid.UUID, idTypeName string, data []byte) error {
 	}
 	return nil
 }
+
+func (u Newsletter) IsEmpty() bool {
+	return uuid.UUID(u) == uuid.Nil
+}

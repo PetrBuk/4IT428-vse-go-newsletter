@@ -9,7 +9,7 @@ import (
 type Handler struct {
 	*chi.Mux
 
-	service RouteService
+	service       RouteService
 	authenticator middleware.Authenticator
 }
 
@@ -18,7 +18,7 @@ func NewHandler(
 	authenticator middleware.Authenticator,
 ) *Handler {
 	h := &Handler{
-		service: service,
+		service:       service,
 		authenticator: authenticator,
 	}
 	h.initRouter()
@@ -44,6 +44,18 @@ func (h *Handler) initRouter() {
 		r.With(authenticate).Get("/{id}", h.GetNewsletter)
 		r.With(authenticate).Put("/{id}", h.UpdateNewsletter)
 		r.With(authenticate).Delete("/{id}", h.DeleteNewsletter)
+		r.Get("/{id}/subscribe", h.SubscribeNewsletter)
+		r.Get("/{id}/unsubscribe", h.UnsubscribeNewsletter)
+		r.Get("/{id}/confirm", h.ConfirmSubscription)
+	})
+
+	r.Route("/posts", func(r chi.Router) {
+		r.With(authenticate).Get("/", h.ListPosts)
+		r.With(authenticate).Post("/", h.CreatePost)
+		r.With(authenticate).Get("/{id}", h.GetPost)
+		r.With(authenticate).Put("/{id}", h.UpdatePost)
+		r.With(authenticate).Delete("/{id}", h.DeletePost)
+		r.With(authenticate).Put("/{id}/publish", h.PublishPost)
 	})
 
 	h.Mux = r
